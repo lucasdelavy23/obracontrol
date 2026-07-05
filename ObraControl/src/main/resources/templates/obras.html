@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"></html>
+<head>
+    <meta charset="UTF-8">
+
+    <title>Gerenciamento de Obras</title>
+</head>
+<body>
+    <h1>Gerenciamento de Obras</h1>
+    
+
+    <form action="/form-obras">
+
+        <label>Nome da Obra</label>
+        <input type="text" name="nomeDaObra">
+        <br>
+
+        <label>Quanitdade de apartamentos por andar</label>
+        <input type="number" name="apsAndar" min="1" required>
+        <br>
+
+        <label>Numeração do primeiro andar</label>
+        <input type="number" name="andarInicial" min="1" required>
+        <br>
+
+        <label>Numeração do último andar</label>
+        <input type="number" name="andarFinal">
+        <br>
+
+        <label>Numeração do Primeiro Andar</label>
+        <input type="number" name="numPrimeiroAndar" min="1" required>
+        //USAR A INFORMAÇÃO DO PRIMEIRO,ULTIMO  E NUMERAÇÃO DO PRIMEIRO ANDAR PARA GERAR OS APS DE FORMA AUTOMATICA COM OS DADOS INFORMADOS.
+        <button type="submit">Criar</button>
+    </form>
+</body>
+</html>
