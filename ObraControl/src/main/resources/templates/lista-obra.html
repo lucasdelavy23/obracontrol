@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lista de Obras</title>
+  </head>
+
+  <body>
+    <h1>Obras Cadastradas</h1>
+
+    <a href="/cadastro-obra">Nova Obra</a>
+
+    <br /><br />
+
+    <table border="1">
+      <tr>
+        <th>Nome</th>
+        <th>Endereço</th>
+      </tr>
+
+      <tr th:each="obra : ${obras}">
+        <td th:text="${obra.nome}"></td>
+        <td th:text="${obra.endereco}"></td>
+      </tr>
+    </table>
+  </body>
+</html>

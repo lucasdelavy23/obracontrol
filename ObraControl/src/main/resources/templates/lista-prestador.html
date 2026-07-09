@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lista de Prestadores</title>
+  </head>
+
+  <body>
+    <h1>Prestadores Cadastrados</h1>
+
+    <a href="/cadastrar-prestador">Novo Prestador</a>
+
+    <br /><br />
+
+    <table border="1">
+      <tr>
+        <th>Nome</th>
+        <th>Telefone</th>
+      </tr>
+
+      <tr th:each="prestador : ${prestadores}">
+        <td th:text="${prestador.nome}"></td>
+        <td th:text="${prestador.telefone}"></td>
+      </tr>
+    </table>
+  </body>
+</html>
