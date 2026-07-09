@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Checklist Apartamento</title>
+  </head>
+
+  <body>
+    <h1>Checklist do Apartamento</h1>
+
+    <h3 th:text="'Apartamento: ' + ${apartamento}"></h3>
+
+    <form action="/apartamento/salvar-checklist" method="post">
+      <div th:each="i : ${#numbers.sequence(1, quantidadePortas)}">
+        <h4 th:text="'Porta ' + ${i}"></h4>
+
+        <input type="checkbox" th:name="${'montagem' + i}" /> Montagem<br />
+        <input type="checkbox" th:name="${'espumar' + i}" /> Espumar<br />
+        <input type="checkbox" th:name="${'fixar' + i}" /> Fixar<br />
+        <input type="checkbox" th:name="${'vista' + i}" /> Vista<br />
+        <input type="checkbox" th:name="${'silicone' + i}" /> Silicone<br />
+
+        <hr />
+      </div>
+
+      <button type="submit">Salvar Checklist</button>
+    </form>
+  </body>
+</html>

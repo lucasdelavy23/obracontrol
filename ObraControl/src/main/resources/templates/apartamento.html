@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cadastro de Apartamento</title>
+  </head>
+
+  <body>
+    <h1>Cadastro de Apartamento</h1>
+
+    <form action="/apartamento/salvar" method="post">
+      <div>
+        <label>Número do Apartamento:</label>
+        <input type="text" name="apartamento" />
+      </div>
+
+      <br />
+
+      <div>
+        <label>Quantidade de Portas:</label>
+        <input type="number" name="quantidadePortas" />
+      </div>
+
+      <br /><br />
+
+      <h2>Porta 1</h2>
+
+      <h3>Processos</h3>
+
+      <input type="checkbox" name="montagem" />
+      <label>Montagem</label><br />
+
+      <input type="checkbox" name="espumar" />
+      <label>Espumar</label><br />
+
+      <input type="checkbox" name="fixar" />
+      <label>Fixar</label><br />
+
+      <input type="checkbox" name="vista" />
+      <label>Vista</label><br />
+
+      <input type="checkbox" name="silicone" />
+      <label>Silicone</label>
+
+      <br /><br />
+
+      <button type="submit">Salvar</button>
+
+      <br /><br />
+
+      <button type="/">Home</button>
+    </form>
+  </body>
+</html>
