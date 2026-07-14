@@ -12,27 +12,78 @@
 
   <body>
     <section layout:fragment="content">
-      <h1>Cadastro de Instalador</h1>
+      <div class="d-flex justify-content-between">
+        <h1>Cadastro de Instalador</h1>
+        <button
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#modal_instalador"
+        >
+          Novo instalador
+        </button>
+      </div>
 
-      <form action="/instalador/salvar" method="post">
-        <div>
-          <label>Nome:</label>
-          <input type="text" name="nome" />
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Opções</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- Modal -->
+      <div class="modal" tabindex="-1" id="modal_instalador">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form action="/instalador/salvar" method="post">
+              <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="nome" class="form-label">Nome:</label>
+                  <input
+                    type="text"
+                    name="nome"
+                    id="nome"
+                    class="form-control"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="telefone" class="form-label">Telefone:</label>
+                  <input
+                    type="text"
+                    name="telefone"
+                    id="telefone"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  Cadastrar Instalador
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-
-        <br />
-
-        <div>
-          <label>Telefone:</label>
-          <input type="text" name="telefone" />
-        </div>
-
-        <br />
-
-        <button type="submit">Cadastrar Instalador</button>
-
-        <br /><br />
-      </form>
+      </div>
     </section>
   </body>
 </html>
