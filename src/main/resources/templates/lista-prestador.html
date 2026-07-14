@@ -1,27 +1,34 @@
 <!doctype html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html
+  lang="pt-BR"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/base}"
+>
   <head>
     <meta charset="UTF-8" />
     <title>Lista de Prestadores</title>
   </head>
 
   <body>
-    <h1>Prestadores Cadastrados</h1>
+    <section layout:fragment="content">
+      <h1>Prestadores Cadastrados</h1>
 
-    <a href="/cadastrar-prestador">Novo Prestador</a>
+      <a href="/cadastrar-prestador">Novo Prestador</a>
 
-    <br /><br />
+      <br /><br />
 
-    <table border="1">
-      <tr>
-        <th>Nome</th>
-        <th>Telefone</th>
-      </tr>
+      <table border="1">
+        <tr>
+          <th>Nome</th>
+          <th>Telefone</th>
+        </tr>
 
-      <tr th:each="prestador : ${prestadores}">
-        <td th:text="${prestador.nome}"></td>
-        <td th:text="${prestador.telefone}"></td>
-      </tr>
-    </table>
+        <tr th:each="prestador : ${prestadores}">
+          <td th:text="${prestador.nome}"></td>
+          <td th:text="${prestador.telefone}"></td>
+        </tr>
+      </table>
+    </section>
   </body>
 </html>

@@ -1,25 +1,32 @@
 <!doctype html>
-<html lang="pt-BR">
+<html
+  lang="pt-BR"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/base}"
+>
   <head>
     <meta charset="UTF-8" />
     <title>Login</title>
   </head>
 
   <body>
-    <h1>Login do Sistema</h1>
+    <section layout:fragment="content">
+      <h1>Login do Sistema</h1>
 
-    <form action="/login" method="post">
-      <div>
-        <label>Login:</label>
-        <input type="text" name="login" />
-      </div>
+      <form action="/login" method="post">
+        <div>
+          <label>Login:</label>
+          <input type="text" name="login" />
+        </div>
 
-      <br />
+        <br />
 
-      <div>
-        <label>Senha:</label>
-        <input type="password" name="Senha" />
-      </div>
-    </form>
+        <div>
+          <label>Senha:</label>
+          <input type="password" name="Senha" />
+        </div>
+      </form>
+    </section>
   </body>
 </html>

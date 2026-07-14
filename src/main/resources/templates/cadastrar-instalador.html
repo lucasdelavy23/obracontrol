@@ -7,32 +7,31 @@
 >
   <head>
     <meta charset="UTF-8" />
-    <title>Obra</title>
+    <title>Cadastro de Prestador de Serviços</title>
   </head>
 
   <body>
     <section layout:fragment="content">
-      <h1>Obra</h1>
+      <h1>Cadastro de Instalador</h1>
 
-      <form action="/cadastro-obra" method="post">
+      <form action="/instalador/salvar" method="post">
         <div>
-          <label>Obra</label>
-          <input type="text" name="login" />
+          <label>Nome:</label>
+          <input type="text" name="nome" />
         </div>
 
         <br />
 
         <div>
-          <label>Endereço</label>
-          <input type="text" name="endereço" />
+          <label>Telefone:</label>
+          <input type="text" name="telefone" />
         </div>
 
         <br />
 
-        <button type="submit">Cadastrar Obra</button>
+        <button type="submit">Cadastrar Instalador</button>
+
         <br /><br />
-
-        <button type="/">Home</button>
       </form>
     </section>
   </body>
