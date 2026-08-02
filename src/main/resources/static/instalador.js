@@ -15,7 +15,7 @@ function listarInstaladores(instaladores) {
       <td>${instalador.id}</td>
       <td>${instalador.nome}</td>
       <td>${instalador.telefone}</td>
-      <td></td>
+      <td><button class="btn btn-danger" onclick="removerInstalador(${instalador.id})" >Remover</button></td>
     </tr>
     `;
 
@@ -61,4 +61,24 @@ function fecharModal() {
   const modal = bootstrap.Modal.getOrCreateInstance(modalHtml);
   modal.hide();
 }
+
+async function removerInstalador(id) {
+  // Regra de parada.
+  if (!confirm("Realmente deseja apagar esse produto?")) {
+    return;
+  }
+  const url = `${GLOBAL_URL}/${id}`;
+
+  try {
+    await fetch(url, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    consolo.error(error);
+    alert("Não foi possível apagar este produto.");
+  } finally {
+    carregarInstaladores();
+  }
+}
+
 carregarInstaladores();
