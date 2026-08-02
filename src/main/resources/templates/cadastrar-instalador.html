@@ -39,53 +39,50 @@
       <div class="modal" tabindex="-1" id="modal_instalador">
         <div class="modal-dialog">
           <div class="modal-content">
-            <form action="/instalador/salvar" method="post">
-              <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
+            <div class="modal-header">
+              <h5 class="modal-title">Cadastrar Novo Instalador</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome:</label>
+                <input type="text" name="nome" id="nome" class="form-control" />
               </div>
-              <div class="modal-body">
-                <div class="mb-3">
-                  <label for="nome" class="form-label">Nome:</label>
-                  <input
-                    type="text"
-                    name="nome"
-                    id="nome"
-                    class="form-control"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label for="telefone" class="form-label">Telefone:</label>
-                  <input
-                    type="text"
-                    name="telefone"
-                    id="telefone"
-                    class="form-control"
-                  />
-                </div>
+              <div class="mb-3">
+                <label for="telefone" class="form-label">Telefone:</label>
+                <input
+                  type="text"
+                  name="telefone"
+                  id="telefone"
+                  class="form-control"
+                />
               </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-                <button type="submit" class="btn btn-primary">
-                  Cadastrar Instalador
-                </button>
-              </div>
-            </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="adicionarInstalador()"
+              >
+                Cadastrar Instalador
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      <script src="/instalador.js"></script>
+      <script th:src="@{/instalador.js}"></script>
     </section>
   </body>
 </html>

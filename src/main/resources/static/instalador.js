@@ -24,4 +24,41 @@ function listarInstaladores(instaladores) {
   }
 }
 
+function criarObjetoInstalador() {
+  return {
+    nome: document.querySelector("#nome").value,
+    telefone: document.querySelector("#telefone").value || 0,
+  };
+}
+
+async function adicionarInstalador() {
+  const instalador = criarObjetoInstalador();
+
+  try {
+    await fetch(GLOBAL_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(instalador),
+    });
+    limparFormulario();
+    fecharModal();
+    carregarInstaladores();
+  } catch (error) {
+    console.error(error);
+    alert("Não foi possível cadastrar o instalador");
+  }
+}
+
+function limparFormulario() {
+  document.querySelector("#nome").value = "";
+  document.querySelector("#telefone").value = "";
+}
+
+function fecharModal() {
+  const modalHtml = document.querySelector("#modal_instalador");
+  const modal = bootstrap.Modal.getOrCreateInstance(modalHtml);
+  modal.hide();
+}
 carregarInstaladores();
