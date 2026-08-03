@@ -7,33 +7,97 @@
 >
   <head>
     <meta charset="UTF-8" />
-    <title>Obra</title>
+    <title>Cadastro de Obra</title>
   </head>
 
   <body>
     <section layout:fragment="content">
-      <h1>Obra</h1>
+      <div class="d-flex justify-content-between">
+        <h1>Cadastro de Obra</h1>
+        <button
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#modal_obra"
+        >
+          Nova Obra
+        </button>
+      </div>
 
-      <form action="/cadastro-obra" method="post">
-        <div>
-          <label>Obra</label>
-          <input type="text" name="login" />
+      <table class="table" id="table_obra">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome da Obra</th>
+            <th>Construtora</th>
+            <th>Endereço</th>
+            <th>Opções</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- Modal -->
+      <div class="modal" tabindex="-1" id="modal_obra">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Cadastrar Nova Obra</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome da Obra:</label>
+                <input
+                  type="text"
+                  name="nome"
+                  id="nomeObra"
+                  class="form-control"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="construtora" class="form-label">Construtora:</label>
+                <input
+                  type="text"
+                  name="construtora"
+                  id="construtora"
+                  class="form-control"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="endereco" class="form-label">Endereço:</label>
+                <input
+                  type="text"
+                  name="endereco"
+                  id="endereco"
+                  class="form-control"
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="adicionarObra()"
+              >
+                Cadastrar Obra
+              </button>
+            </div>
+          </div>
         </div>
-
-        <br />
-
-        <div>
-          <label>Endereço</label>
-          <input type="text" name="endereço" />
-        </div>
-
-        <br />
-
-        <button type="submit">Cadastrar Obra</button>
-        <br /><br />
-
-        <button type="/">Home</button>
-      </form>
+      </div>
+      <script th:src="@{/obra.js}"></script>
     </section>
   </body>
 </html>

@@ -64,7 +64,7 @@ function fecharModal() {
 
 async function removerInstalador(id) {
   // Regra de parada.
-  if (!confirm("Realmente deseja apagar esse produto?")) {
+  if (!confirm("Realmente deseja apagar esse registro?")) {
     return;
   }
   const url = `${GLOBAL_URL}/${id}`;
@@ -75,7 +75,7 @@ async function removerInstalador(id) {
     });
   } catch (error) {
     consolo.error(error);
-    alert("Não foi possível apagar este produto.");
+    alert("Não foi possível apagar este registro.");
   } finally {
     carregarInstaladores();
   }
