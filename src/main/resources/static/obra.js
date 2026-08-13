@@ -1,4 +1,4 @@
-const GLOBAL_URL = `https://6a56ca43b17de7bebbde7b73.mockapi.io/instaladores`; // Ver como usar a mesma api ou outra para poder carregar os dados.
+const GLOBAL_URL = `https://6a56ca43b17de7bebbde7b73.mockapi.io/obras`; // Ver como usar a mesma api ou outra para poder carregar os dados.
 
 async function carregarObras() {
   const resposta = await fetch(GLOBAL_URL);
@@ -28,7 +28,7 @@ function listarInstaladores(obras) {
 function criarObjetoObra() {
   return {
     nome: document.querySelector("#nomeObra").value,
-    construtora: document.querySelector("#construtora").value || 0,
+    construtora: document.querySelector("#construtora").selectedOptions[0]?.value || 0,
     endereco: document.querySelector("#endereco").value || 0,
   };
 }
@@ -36,7 +36,8 @@ function criarObjetoObra() {
 async function adicionarObra() {
   const obra = criarObjetoObra();
 
-  try {
+
+  //try {
     await fetch(GLOBAL_URL, {
       method: "POST",
       headers: {
@@ -47,14 +48,14 @@ async function adicionarObra() {
     limparFormulario();
     fecharModal();
     carregarObras();
-  } catch (error) {
-    console.error(error);
-    alert("Não foi possível cadastrar a obra.");
-  }
+  // } catch (error) {
+  //   console.error(error);
+  //   alert("Não foi possível cadastrar a obra.");
+  // }
 }
 
 function limparFormulario() {
-  document.querySelector("#nome").value = "";
+  document.querySelector("#nomeObra").value = "";
   document.querySelector("#construtora").value = "";
   document.querySelector("#endereco").value = "";
 }
@@ -84,4 +85,33 @@ async function removerObra(id) {
   }
 }
 
-carregarObras();
+// Lista de construturas
+// TODO: Criar resource na mockapi
+const construtoras = [
+  { id: 1, nome: "Dallo" },
+  { id: 2, nome: "Pascoalotto" },
+  { id: 3, nome: "Procave" },
+  { id: 4, nome: "FG" },  
+];
+
+function init() {
+  popularConstrutoras(construtoras);
+  carregarObras();
+}
+
+init();
+
+
+
+
+function popularConstrutoras(construtoras) {
+  const construtoraSelect = document.querySelector("#construtora");
+  let html = "";
+  for (const construtora of construtoras) {
+    html += `<option value="${construtora.id}">${construtora.nome}</option>`;
+  }
+  construtoraSelect.innerHTML = html;
+}
+
+
+
