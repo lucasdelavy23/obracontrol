@@ -1,5 +1,4 @@
-const GLOBAL_URL = `https://6a56ca43b17de7bebbde7b73.mockapi.io/obras`; // Ver como usar a mesma api ou outra para poder carregar os dados.
-
+const GLOBAL_URL = `https://6a56ca43b17de7bebbde7b73.mockapi.io/obras`;
 async function carregarObras() {
   const resposta = await fetch(GLOBAL_URL);
   const obras = await resposta.json();
@@ -28,7 +27,8 @@ function listarInstaladores(obras) {
 function criarObjetoObra() {
   return {
     nome: document.querySelector("#nomeObra").value,
-    construtora: document.querySelector("#construtora").selectedOptions[0]?.value || 0,
+    construtora:
+      document.querySelector("#construtora").selectedOptions[0]?.value || 0,
     endereco: document.querySelector("#endereco").value || 0,
   };
 }
@@ -36,8 +36,7 @@ function criarObjetoObra() {
 async function adicionarObra() {
   const obra = criarObjetoObra();
 
-
-  //try {
+  try {
     await fetch(GLOBAL_URL, {
       method: "POST",
       headers: {
@@ -48,10 +47,10 @@ async function adicionarObra() {
     limparFormulario();
     fecharModal();
     carregarObras();
-  // } catch (error) {
-  //   console.error(error);
-  //   alert("Não foi possível cadastrar a obra.");
-  // }
+  } catch (error) {
+    console.error(error);
+    alert("Não foi possível cadastrar a obra.");
+  }
 }
 
 function limparFormulario() {
@@ -91,7 +90,7 @@ const construtoras = [
   { id: 1, nome: "Dallo" },
   { id: 2, nome: "Pascoalotto" },
   { id: 3, nome: "Procave" },
-  { id: 4, nome: "FG" },  
+  { id: 4, nome: "FG" },
 ];
 
 function init() {
@@ -101,9 +100,6 @@ function init() {
 
 init();
 
-
-
-
 function popularConstrutoras(construtoras) {
   const construtoraSelect = document.querySelector("#construtora");
   let html = "";
@@ -112,6 +108,3 @@ function popularConstrutoras(construtoras) {
   }
   construtoraSelect.innerHTML = html;
 }
-
-
-
