@@ -14,27 +14,55 @@
     <section layout:fragment="content">
       <h1>Gerenciamento de Obras</h1>
 
+      <br />
+
       <form action="/form-obras">
-        <label>Nome da Obra</label>
-        <input type="text" name="nomeDaObra" required />
+        <div>
+          <label>Nome da Obra</label>
+          <input type="text" name="nomeDaObra" required />
+        </div>
+
         <br />
 
-        <label>Quanitdade de apartamentos por andar</label>
-        <input type="number" name="apsAndar" min="1" required />
+        <div>
+          <label>Cidade</label>
+          <input type="text" name="Cidade" />
+        </div>
+
         <br />
 
-        <label>Numeração do primeiro andar</label>
-        <input type="number" name="andarInicial" min="1" required />
+        <div>
+          <label>Quantidade de apartamentos por andar</label>
+          <input type="number" name="apsAndar" min="1" required />
+        </div>
+
         <br />
 
-        <label>Numeração do último andar</label>
-        <input type="number" name="andarFinal" />
+        <div>
+          <label>Numeração do primeiro andar</label>
+          <input type="number" name="andarInicial" min="1" required />
+        </div>
+
         <br />
 
-        <label>Numeração do Primeiro Andar</label>
-        <input type="number" name="numPrimeiroAndar" min="1" required />
+        <div>
+          <label>Numeração do último andar</label>
+          <input type="number" name="andarFinal" />
+        </div>
+
+        <br />
+
+        <div>
+          <label>Numeração do Primeiro Andar</label>
+          <input type="number" name="numPrimeiroAndar" min="1" required />
+        </div>
+
+        <br />
+
         <!--USAR A INFORMAÇÃO DO PRIMEIRO,ULTIMO  E NUMERAÇÃO DO PRIMEIRO ANDAR PARA GERAR OS APS DE FORMA AUTOMATICA COM OS DADOS INFORMADOS. -->
-        <button type="submit">Criar</button>
+        <div>
+          <button type="submit">Criar</button>
+        </div>
       </form>
     </section>
   </body>
