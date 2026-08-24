@@ -8,6 +8,6 @@ public class ObraControlApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ObraControlApplication.class, args);
-	}
 
+	}
 }
