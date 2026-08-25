@@ -14,6 +14,7 @@ function listarInstaladores(obras) {
       <td>${obra.id}</td>
       <td>${obra.nome}</td>
       <td>${obra.construtora}</td>
+      <td>${obra.cidade}</td>
       <td>${obra.endereco}</td>
       <td><button class="btn btn-danger" onclick="removerObra(${obra.id})" >Remover</button></td>
     </tr>
@@ -28,7 +29,8 @@ function criarObjetoObra() {
   return {
     nome: document.querySelector("#nomeObra").value,
     construtora:
-      document.querySelector("#construtora").selectedOptions[0]?.value || 0,
+      document.querySelector("#construtora").selectedOptions[0]?.text || 0,
+    cidade: document.querySelector("#cidade").value || "",
     endereco: document.querySelector("#endereco").value || 0,
   };
 }
@@ -56,6 +58,7 @@ async function adicionarObra() {
 function limparFormulario() {
   document.querySelector("#nomeObra").value = "";
   document.querySelector("#construtora").value = "";
+  document.querySelector("#cidade").value = "";
   document.querySelector("#endereco").value = "";
 }
 
@@ -108,3 +111,28 @@ function popularConstrutoras(construtoras) {
   }
   construtoraSelect.innerHTML = html;
 }
+
+// //Lista de cidades
+
+// const cidade = [
+//   { id: 1, nome: "Itapema" },
+//   { id: 2, nome: "Balneário Camboriu" },
+//   { id: 3, nome: "Porto Belo" },
+//   { id: 4, nome: "Itajai" },
+// ];
+
+// function init() {
+//   popularCidade(cidade);
+//   carregarObras();
+// }
+
+// init();
+
+// function popularCidade(cidade) {
+//   const cidadeSelect = document.querySelector("#cidade");
+//   let html = "";
+//   for (const cidade of ccidade) {
+//     html += `<option value="${cidade.id}">${cidade.nome}</option>`;
+//   }
+//   cidadeSelect.innerHTML = html;
+// }
