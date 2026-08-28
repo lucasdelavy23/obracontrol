@@ -15,36 +15,18 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
     />
   </head>
-
   <body>
-    <!-- Header -->
     <header
-      class="d-flex bg-light border-bottom py-3 px-4 align-items-center justify-content-between"
+      class="d-flex bg-light border-bottom py-3 px-4 align-items-center justify-content-end d-md-none"
     >
-      <div id="usuario">
-        <div class="d-none d-sm-flex">
-          <span>Teste</span>
-          <button
-            type="button"
-            class="btn btn-link dropdown-toggle dropdown-toggle-split"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <span class="visually-hidden">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Sair</a></li>
-          </ul>
-        </div>
-        <div class="d-sm-none">
-          <a
-            class="btn btn-outline-primary"
-            data-bs-toggle="offcanvas"
-            href="#offcanvas-nav"
-          >
-            <i class="bi bi-list"></i>
-          </a>
-        </div>
+      <div class="d-sm-none">
+        <a
+          class="btn btn-outline-primary"
+          data-bs-toggle="offcanvas"
+          href="#offcanvas-nav"
+        >
+          <i class="bi bi-list"></i>
+        </a>
       </div>
     </header>
 
@@ -55,20 +37,17 @@
         }
       }
 
-      /* Transição suave para todos os links */
       .main-menu .nav-link {
         transition:
           background-color 0.2s ease,
           color 0.2s ease;
       }
 
-      /* 1. Quando o mouse entra na área do menu (.nav), retira a cor do botão ativo */
       .main-menu .nav:hover .nav-link.active {
         background-color: transparent !important;
         color: white !important;
       }
 
-      /* 2. Aplica o fundo azul apenas no botão que o mouse está em cima */
       .main-menu .nav .nav-link:hover,
       .main-menu .nav:hover .nav-link.active:hover {
         background-color: #0d6efd !important;
@@ -79,10 +58,10 @@
     <!-- Menu -->
     <div class="d-flex">
       <div
-        class="offcanvas-md offcanvas-start bg-darkv vh-100 bg-dark"
+        class="offcanvas-md offcanvas-start bg-darkv vh-100 bg-dark d-flex flex-column"
         id="offcanvas-nav"
       >
-        <div id="logo">
+        <div id="logo" class="pt-3">
           <a href="#">
             <img
               src="/images/ObraControl.png"
@@ -93,6 +72,7 @@
             />
           </a>
         </div>
+
         <div class="offcanvas-header">
           <h5 class="offcanvas-title text-white" id="staticBackdropLabel">
             Menu Principal
@@ -105,8 +85,9 @@
             aria-label="Close"
           ></button>
         </div>
-        <div class="offcanvas-body">
-          <nav class="p-sm-3 text-white main-menu">
+
+        <div class="offcanvas-body flex-grow-1 align-items-start">
+          <nav class="p-sm-3 text-white main-menu w-100">
             <ul class="nav nav-pills d-flex flex-column">
               <li class="nav-item">
                 <a href="/home" class="nav-link active">
@@ -117,26 +98,48 @@
 
               <li>
                 <a href="/cadastro-obra" class="nav-link text-white">
-                  <i class="bi bi-people-fill me-2"></i>
+                  <i class="bi bi-building me-2"></i>
                   <span>Cadastro de Obras</span>
                 </a>
               </li>
 
               <li>
                 <a href="/apartamento" class="nav-link text-white">
-                  <i class="bi bi-people-fill me-2"></i>
+                  <i class="bi bi-door-open me-2"></i>
                   <span>Cadastro de Apartamento</span>
                 </a>
               </li>
 
               <li>
                 <a href="/cadastrar-instalador" class="nav-link text-white">
-                  <i class="bi bi-people-fill me-2"></i>
+                  <i class="bi bi-person-gear me-2"></i>
                   <span>Cadastro de Instalador</span>
                 </a>
               </li>
             </ul>
           </nav>
+        </div>
+
+        <div class="mt-auto p-3 border-top border-secondary dropdown">
+          <a
+            href="#"
+            class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+            id="dropdownUser"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="bi bi-person-circle fs-4 me-2"></i>
+            <strong>Usuário</strong>
+          </a>
+          <ul
+            class="dropdown-menu dropdown-menu-dark text-small shadow"
+            aria-labelledby="dropdownUser"
+          >
+            <li><a class="dropdown-item" href="#">Configurações</a></li>
+            <li><a class="dropdown-item" href="#">Perfil</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="#">Sair</a></li>
+          </ul>
         </div>
       </div>
 
