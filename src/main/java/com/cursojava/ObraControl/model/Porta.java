@@ -11,11 +11,11 @@ public class Porta {
 
     public Porta() {
 
-        this.etapas.put("Montagem", false);
-        this.etapas.put("Fixar", false);
-        this.etapas.put("Vistas", false);
-        this.etapas.put("Fechadura", false);
-        this.etapas.put("Acabamento", false);
+        this.etapas.put("montagem", false);
+        this.etapas.put("fixacao", false);
+        this.etapas.put("vistas", false);
+        this.etapas.put("fechadura", false);
+        this.etapas.put("acabamento", false);
     }
 
     public Porta(Long id, String localizacao) {
