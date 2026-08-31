@@ -12,16 +12,85 @@
 
   <body>
     <section layout:fragment="content">
-      <header>
-        <h2>Obra Control</h2>
-      </header>
+      <!-- Título da Página -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="m-0 text-dark">Visão Geral</h2>
+      </div>
 
-      <nav>
-        <a href="/">Home</a>
-        <a href="/cadastro-obra">Obra</a>
-        <a href="/cadastrar-prestador">Prestador</a>
-        <a href="/apartamento">Apartamento</a>
-      </nav>
+      <!-- Cards de Resumo (Dashboard) -->
+      <div class="row g-4">
+        <!-- Card 1: Total de Obras -->
+        <div class="col-12 col-md-4">
+          <div
+            class="card border-0 shadow-sm h-100 border-start border-primary border-4"
+          >
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div
+                    class="text-primary fw-bold text-uppercase mb-1"
+                    style="font-size: 0.85rem"
+                  >
+                    Total de Obras
+                  </div>
+                  <div class="fs-3 fw-bold text-dark">12</div>
+                </div>
+                <div>
+                  <i class="bi bi-building fs-1 text-muted opacity-50"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Apartamentos -->
+        <div class="col-12 col-md-4">
+          <div
+            class="card border-0 shadow-sm h-100 border-start border-success border-4"
+          >
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div
+                    class="text-success fw-bold text-uppercase mb-1"
+                    style="font-size: 0.85rem"
+                  >
+                    Apartamentos
+                  </div>
+                  <div class="fs-3 fw-bold text-dark">45</div>
+                </div>
+                <div>
+                  <i class="bi bi-door-open fs-1 text-muted opacity-50"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Instaladores -->
+        <div class="col-12 col-md-4">
+          <div
+            class="card border-0 shadow-sm h-100 border-start border-info border-4"
+          >
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div
+                    class="text-info fw-bold text-uppercase mb-1"
+                    style="font-size: 0.85rem"
+                  >
+                    Instaladores
+                  </div>
+                  <div class="fs-3 fw-bold text-dark">8</div>
+                </div>
+                <div>
+                  <i class="bi bi-person-gear fs-1 text-muted opacity-50"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   </body>
 </html>
