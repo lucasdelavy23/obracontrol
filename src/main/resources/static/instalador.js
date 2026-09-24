@@ -1,4 +1,4 @@
-const GLOBAL_URL = `https://6a56ca43b17de7bebbde7b73.mockapi.io/instaladores`;
+const GLOBAL_URL = `/api/instaladores`;
 
 async function carregarInstaladores() {
   const resposta = await fetch(GLOBAL_URL);
@@ -74,7 +74,7 @@ async function removerInstalador(id) {
       method: "DELETE",
     });
   } catch (error) {
-    consolo.error(error);
+    console.error(error);
     alert("Não foi possível apagar este registro.");
   } finally {
     carregarInstaladores();

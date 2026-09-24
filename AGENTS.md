@@ -6,12 +6,12 @@ Projeto de TCC (escola): aplicação web Spring Boot 4.1.0 / Java 26 / Thymeleaf
 - Use o wrapper do Maven. No Windows: `.\mvnw.cmd` (comandos aqui assumem PowerShell). Maven 3.9.16 fixado via `wrapper/maven-wrapper.properties` (o Maven em si não é garantido no PATH).
 - Banco local de dev: `docker compose up -d mysql` (MySQL 8.4, padrões `localhost:3306`, db/user/senha todos `obracontrol`, sobrescrevíveis via `.env`; `.env` é gitignored, `.env.example` lista as variáveis).
 - Rodar a aplicação: `.\mvnw.cmd spring-boot:run` (porta 8080). `docker compose up` também builda e roda o container da app.
-- Testes: `.\mvnw.cmd test`. Existe exatamente um teste `@SpringBootTest` (context-loads). O perfil de teste usa H2 em modo MySQL com Flyway **desativado**; nunca toca no MySQL.
+- Testes: `.\mvnw.cmd test`. Dois testes `@SpringBootTest` (context-loads + CRUD dos repositórios JDBC). O perfil de teste usa H2 em modo MySQL com Flyway **desativado** e aplica `schema.sql`/`data.sql` (réplica enxuta de `sql/`) via `spring.sql.init.mode=always`; nunca toca no MySQL.
 
 ## Pegadinhas de arquitetura (verificadas — não "corrigir")
-- A única persistência do backend é `PortaRepository` (com.cursojava.ObraControl.repository): uma **`ArrayList` em memória** feita na mão, NÃO o banco. Não existe camada JPA/DAO em lugar nenhum. As classes de modelo (`Porta`, `Obra`, `Apartamento`) são POJOs simples.
-- O JS do front-end (`static/obra.js`, `static/instalador.js`) chama uma **API mock (mockapi.io)** via `GLOBAL_URL`, não o backend Spring. Não existe endpoint REST `/api/obras` nem `/api/instaladores`. Só existe `PortaRestController` (`/api/portas`).
-- `spring.flyway.enabled=true` na config principal, mas **não existe diretório `db/migration`** — o schema em `sql/` (numerados `001`–`008`) é aplicado manualmente. O Flyway nunca roda migration aqui.
+- Persistência é híbrida: `PortaRepository` (com.cursojava.ObraControl.repository) é uma **`ArrayList` em memória** feita na mão, NÃO o banco — não tocar. Já `ObraRepository` e `InstaladorRepository` persistem no **MySQL real via `JdbcTemplate`** (`spring-boot-starter-jdbc`) contra o schema canônico de `sql/` (JOIN construtora/cidade devolvem os nomes que a UI espera; POST resolve nome→id, criando construtora/cidade se ausentes). Não existe camada JPA/Spring Data. As classes de modelo (`Porta`, `Obra`, `Instalador`, `Apartamento`) são POJOs simples.
+- O JS do front-end (`static/obra.js`, `static/instalador.js`) chama **endpoints REST do próprio backend Spring** via `GLOBAL_URL` relativo: `/api/obras` (`ObraRestController`) e `/api/instaladores` (`InstaladorRestController`), ambos JDBC → MySQL. Resta `PortaRestController` (`/api/portas`), em memória.
+- Schema é gerido por **Flyway ativo no boot** (`spring.flyway.enabled=true`): migrações canônicas em `src/main/resources/db/migration/` (`V001__create_tables.sql` cria as tabelas, `V002__seed_data.sql` insere o seed). O Flyway só roda na config principal; o perfil de teste o desativa (H2). Migrações novas seguem `V00N__descricao.sql`. **Não** aplicar `sql/001`–`002` à mão: num banco que já tem o schema pré-existente (aplicado manualmente), o boot falha com `Validate failed` — para dev, resetar o banco (`docker compose down -v` apaga o volume do MySQL e o Flyway recria tudo do zero; ou DROP DATABASE + CREATE DATABASE e deixe o Flyway recriar).
 - O nome do pacote é de caixa mista: `com.cursojava.ObraControl` (casando com a classe da aplicação e os testes). Renomear para `com.cursojava.obracontrol` quebra pacotes/testes até tudo ser reorganizado junto — trate qualquer "correção" de caixa como um refactor grande e deliberado.
 
 ## Padrões do projeto
@@ -21,5 +21,5 @@ Projeto de TCC (escola): aplicação web Spring Boot 4.1.0 / Java 26 / Thymeleaf
 
 ## Convenções
 - Controllers MVC mapeiam URLs para nomes de views Thymeleaf em `src/main/resources/templates`; as views estendem `layout/base.html` (thymeleaf-layout-dialect).
-- Os scripts em `sql/` são a fonte canônica do schema; mantenha-os em sincronia ao mudar tabelas (o Flyway não pega drift).
+- Os scripts em `sql/` são a fonte canônica do schema; mantenha-os em sincronia ao mudar tabelas (o Flyway não pega drift). Note que `sql/001`–`002` foram convertidos nas migrações `db/migration`; `sql/003`–`008` são queries de consulta usadas como referência.
 - `target/`, `.env` e `.vscode/` são gitignored. A UI usa Bootstrap 5.3 + bootstrap-icons via CDN.

@@ -1,4 +1,4 @@
-const GLOBAL_URL = `https://6a56ca43b17de7bebbde7b73.mockapi.io/obras`;
+const GLOBAL_URL = `/api/obras`;
 async function carregarObras() {
   const resposta = await fetch(GLOBAL_URL);
   const obras = await resposta.json();
@@ -19,10 +19,10 @@ function listarInstaladores(obras) {
       <td><button class="btn btn-danger" onclick="removerObra(${obra.id})" >Remover</button></td>
     </tr>
     `;
-
-    const tbody = document.querySelector("#table_obra tbody");
-    tbody.innerHTML = html;
   }
+
+  const tbody = document.querySelector("#table_obra tbody");
+  tbody.innerHTML = html;
 }
 
 function criarObjetoObra() {
@@ -80,7 +80,7 @@ async function removerObra(id) {
       method: "DELETE",
     });
   } catch (error) {
-    consolo.error(error);
+    console.error(error);
     alert("Não foi possível apagar este registro.");
   } finally {
     carregarObras();
@@ -88,7 +88,6 @@ async function removerObra(id) {
 }
 
 // Lista de construturas
-// TODO: Criar resource na mockapi
 const construtoras = [
   { id: 1, nome: "Dallo" },
   { id: 2, nome: "Pascoalotto" },
