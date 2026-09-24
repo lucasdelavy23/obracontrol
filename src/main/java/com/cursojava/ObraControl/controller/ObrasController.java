@@ -32,7 +32,7 @@ public class ObrasController {
 
     @GetMapping("/home")
     public String home() {
-        return "home";
+        return "Home";
     }
 
     @GetMapping("/lista-obra")

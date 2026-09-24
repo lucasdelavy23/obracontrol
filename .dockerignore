@@ -1,0 +1,17 @@
+target
+.git
+.gitignore
+.wrapper
+wrapper
+mvnw
+mvnw.cmd
+debug.log
+.vscode
+.idea
+*.iml
+.env
+.env.*
+!.env.example
+README.md
+sql
+.github
