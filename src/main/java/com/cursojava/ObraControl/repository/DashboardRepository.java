@@ -38,9 +38,8 @@ public class DashboardRepository {
                         WHERE montagem = TRUE AND fixacao = TRUE AND fechadura = TRUE
                         AND vistas = TRUE AND acabamento = TRUE) AS portas_concluidas,
                     (SELECT COUNT(*) FROM porta WHERE instalador_id IS NULL) AS portas_sem_instalador,
-                    (SELECT COUNT(*) FROM instalador) AS total_instaladores,
-                    (SELECT COALESCE(SUM(%s), 0) FROM porta) AS etapas_concluidas
-                """.formatted(ETAPAS_CONCLUIDAS);
+                    (SELECT COUNT(*) FROM instalador) AS total_instaladores
+                """;
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ResumoDashboard(
                 rs.getLong("total_obras"),
@@ -50,8 +49,7 @@ public class DashboardRepository {
                 rs.getLong("total_portas"),
                 rs.getLong("portas_concluidas"),
                 rs.getLong("portas_sem_instalador"),
-                rs.getLong("total_instaladores"),
-                rs.getLong("etapas_concluidas")));
+                rs.getLong("total_instaladores")));
     }
 
     public List<ProgressoObra> getProgressoObras() {

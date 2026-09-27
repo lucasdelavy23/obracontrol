@@ -1,6 +1,7 @@
 package com.cursojava.ObraControl.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -61,9 +62,6 @@ class DashboardTests {
         assertEquals(1, dashboard.resumo().portasConcluidas());
         assertEquals(2, dashboard.resumo().portasSemInstalador());
         assertEquals(2, dashboard.resumo().totalInstaladores());
-        assertEquals(7, dashboard.resumo().etapasConcluidas());
-        assertEquals(15, dashboard.resumo().getTotalEtapas());
-        assertEquals(47, dashboard.resumo().getPercentualGeral());
 
         ProgressoObra residencial = buscarObra(dashboard, "Residencial Atlântico");
         assertEquals(1, residencial.quantidadeApartamentos());
@@ -98,7 +96,7 @@ class DashboardTests {
         assertHtmlValue(html, "obras-finalizadas", "1");
         assertHtmlValue(html, "portas-concluidas", "1");
         assertHtmlValue(html, "portas-sem-instalador", "2");
-        assertHtmlValue(html, "progresso-geral", "47%");
+        assertFalse(html.contains("Progresso geral das instalações"));
     }
 
     @Test
@@ -114,8 +112,6 @@ class DashboardTests {
         assertEquals(0, dashboard.resumo().totalApartamentos());
         assertEquals(0, dashboard.resumo().totalPortas());
         assertEquals(0, dashboard.resumo().totalInstaladores());
-        assertEquals(0, dashboard.resumo().getTotalEtapas());
-        assertEquals(0, dashboard.resumo().getPercentualGeral());
         assertTrue(dashboard.progressoObras().isEmpty());
         assertTrue(dashboard.cargaInstaladores().isEmpty());
     }

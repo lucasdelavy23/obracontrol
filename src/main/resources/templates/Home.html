@@ -111,30 +111,6 @@
         </div>
       </div>
 
-      <!-- Progresso geral -->
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-end mb-2">
-            <div>
-              <h2 class="h5 mb-1">Progresso geral das instalações</h2>
-              <span class="small text-secondary">
-                <span th:text="${dashboard.resumo.etapasConcluidas}">0</span>
-                de
-                <span th:text="${dashboard.resumo.totalEtapas}">0</span>
-                etapas concluídas
-              </span>
-            </div>
-            <span id="progresso-geral" class="fs-4 fw-bold text-primary"
-                  th:text="|${dashboard.resumo.percentualGeral}%|">0%</span>
-          </div>
-          <div class="progress" role="progressbar" aria-label="Progresso geral" aria-valuemin="0" aria-valuemax="100"
-               th:attr="aria-valuenow=${dashboard.resumo.percentualGeral}">
-            <div class="progress-bar" th:style="|width: ${dashboard.resumo.percentualGeral}%|"
-                 th:text="|${dashboard.resumo.percentualGeral}%|">0%</div>
-          </div>
-        </div>
-      </div>
-
       <div class="row g-4">
         <!-- Progresso por obra -->
         <div class="col-12 col-xl-8">
