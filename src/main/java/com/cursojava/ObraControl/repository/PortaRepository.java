@@ -1,67 +1,101 @@
 package com.cursojava.ObraControl.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
-import java.util.ArrayList;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.cursojava.ObraControl.dto.CadastroPorta;
+import com.cursojava.ObraControl.model.EtapaPorta;
 import com.cursojava.ObraControl.model.Porta;
 
 @Repository
 public class PortaRepository {
-    private List<Porta> portas = new ArrayList<>();
-    private Long proximoId = 1L;
 
-    public Porta salvar(Porta porta) {
-        porta.setId(proximoId);
-        proximoId++;
+    private final JdbcTemplate jdbcTemplate;
 
-        portas.add(porta);
+    public PortaRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
+    private static final String SELECT_BASE = """
+            SELECT id, local, apartamento_id, instalador_id,
+                   montagem, fixacao, fechadura, vistas, acabamento
+            FROM porta
+            """;
+
+    public List<Porta> findByApartamento(Long apartamentoId) {
+        return jdbcTemplate.query(
+                SELECT_BASE + " WHERE apartamento_id = ? ORDER BY local, id",
+                this::mapPorta, apartamentoId);
+    }
+
+    public Porta findById(Long id) {
+        List<Porta> portas = jdbcTemplate.query(SELECT_BASE + " WHERE id = ?", this::mapPorta, id);
+        return portas.isEmpty() ? null : portas.get(0);
+    }
+
+    public Porta save(CadastroPorta cadastro) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO porta (local, apartamento_id) VALUES (?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, cadastro.local());
+            ps.setLong(2, cadastro.apartamentoId());
+            return ps;
+        }, keyHolder);
+
+        return findById(keyHolder.getKey().longValue());
+    }
+
+    public Porta update(Long id, CadastroPorta cadastro) {
+        jdbcTemplate.update("UPDATE porta SET local = ?, apartamento_id = ? WHERE id = ?",
+                cadastro.local(), cadastro.apartamentoId(), id);
+        return findById(id);
+    }
+
+    public Porta delete(Long id) {
+        Porta porta = findById(id);
+        if (porta == null) {
+            return null;
+        }
+        jdbcTemplate.update("DELETE FROM porta WHERE id = ?", id);
         return porta;
     }
 
-    public PortaRepository() {
-        salvar(new Porta(null, "Porta 1"));
-        salvar(new Porta(null, "Porta 2"));
+    public Porta updateStage(Long id, EtapaPorta etapa, boolean concluida) {
+        jdbcTemplate.update("UPDATE porta SET " + coluna(etapa) + " = ? WHERE id = ?", concluida, id);
+        return findById(id);
     }
 
-    public List<Porta> listarTodas() {
-        return portas;
+    /**
+     * Traduz a etapa do checklist para a coluna correspondente na tabela porta,
+     * evitando concatenar nomes vindos da requisição.
+     */
+    private String coluna(EtapaPorta etapa) {
+        return switch (etapa) {
+            case MONTAGEM -> "montagem";
+            case FIXACAO -> "fixacao";
+            case FECHADURA -> "fechadura";
+            case VISTAS -> "vistas";
+            case ACABAMENTO -> "acabamento";
+        };
     }
 
-    public Porta buscarPorId(Long id) {
-        for (Porta porta : portas) {
-            if (porta.getId().equals(id)) {
-                return porta;
-            }
+    private Porta mapPorta(ResultSet rs, int rowNum) throws SQLException {
+        Porta porta = new Porta(rs.getLong("id"), rs.getString("local"), rs.getLong("apartamento_id"));
+        long instaladorId = rs.getLong("instalador_id");
+        porta.setInstaladorId(rs.wasNull() ? null : instaladorId);
+        for (EtapaPorta etapa : EtapaPorta.values()) {
+            porta.getEtapas().put(etapa.getNome(), rs.getBoolean(coluna(etapa)));
         }
-        return null;
-    }
-
-    public Porta atualizarEtapa(Long id, String nomeEtapa, Boolean concluida) {
-
-        Porta portaExistente = buscarPorId(id);
-
-        if (portaExistente == null) {
-            return null;
-        }
-
-        if (!portaExistente.getEtapas().containsKey(nomeEtapa)) {
-            return null;
-        }
-
-        portaExistente.getEtapas().put(nomeEtapa, concluida);
-
-        return portaExistente;
-    }
-
-    public Porta excluir(Long id) {
-        Porta portaExistente = buscarPorId(id);
-        if (portaExistente == null) {
-            return null;
-        }
-
-        portas.remove(portaExistente);
-        return portaExistente;
+        return porta;
     }
 }

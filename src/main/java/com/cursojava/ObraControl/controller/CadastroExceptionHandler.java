@@ -12,7 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice(assignableTypes = {ObraRestController.class, CadastroRestController.class,
-        InstaladorRestController.class, ApartamentoRestController.class})
+        InstaladorRestController.class, ApartamentoRestController.class, PortaRestController.class})
 public class CadastroExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, String>> handleStatus(ResponseStatusException exception) {

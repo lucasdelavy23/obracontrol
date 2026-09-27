@@ -12,25 +12,97 @@
 
   <body>
     <section layout:fragment="content">
-      <h1>Checklist do Apartamento</h1>
-
-      <h3 th:text="'Apartamento: ' + ${apartamento}"></h3>
-
-      <form action="/apartamento/salvar-checklist" method="post">
-        <div th:each="i : ${#numbers.sequence(1, quantidadePortas)}">
-          <h4 th:text="'Porta ' + ${i}"></h4>
-
-          <input type="checkbox" th:name="${'montagem' + i}" /> Montagem<br />
-          <input type="checkbox" th:name="${'espumar' + i}" /> Espumar<br />
-          <input type="checkbox" th:name="${'fixar' + i}" /> Fechadura<br />
-          <input type="checkbox" th:name="${'vista' + i}" /> Vista<br />
-          <input type="checkbox" th:name="${'silicone' + i}" /> Silicone<br />
-
-          <hr />
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1>Checklist de Instalação</h1>
+          <h5 id="checklist-titulo" class="text-secondary"></h5>
         </div>
+        <button class="btn btn-primary" id="new-porta" disabled>
+          Nova porta
+        </button>
+      </div>
 
-        <button type="submit">Salvar Checklist</button>
-      </form>
+      <div id="checklist-message" class="alert alert-danger mt-3" role="alert" hidden></div>
+
+      <div class="row g-3 mt-1">
+        <div class="col-md-5">
+          <label for="obra-filtro" class="form-label">Obra:</label>
+          <select id="obra-filtro" class="form-select" disabled></select>
+        </div>
+        <div class="col-md-4">
+          <label for="apartamento-filtro" class="form-label">Apartamento:</label>
+          <select id="apartamento-filtro" class="form-select" disabled></select>
+        </div>
+      </div>
+
+      <table class="table align-middle mt-3" id="table_portas">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Local</th>
+            <th class="text-center" id="etapas-header"></th>
+            <th class="text-center">Progresso</th>
+            <th class="text-end">Opções</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- Modal -->
+      <div class="modal" tabindex="-1" id="modal_porta">
+        <div class="modal-dialog">
+          <form class="modal-content" id="porta-form">
+            <div class="modal-header">
+              <h5 class="modal-title">Cadastrar Nova Porta</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Fechar"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div id="porta-form-message" class="alert alert-danger" role="alert" hidden></div>
+              <fieldset id="porta-fields">
+                <div class="mb-3">
+                  <label for="apartamento" class="form-label">Apartamento:</label>
+                  <select name="apartamento" id="apartamento" class="form-select" required disabled></select>
+                </div>
+                <div class="mb-3">
+                  <label for="local" class="form-label">Local:</label>
+                  <input
+                    type="text"
+                    name="local"
+                    id="local"
+                    class="form-control"
+                    placeholder="Ex.: Sala de estar"
+                    required
+                    maxlength="200"
+                  />
+                </div>
+              </fieldset>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Fechar
+              </button>
+              <button
+                type="submit"
+                id="save-porta"
+                class="btn btn-primary"
+                disabled
+              >
+                Cadastrar Porta
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <script th:src="@{/checklist.js}"></script>
     </section>
   </body>
 </html>

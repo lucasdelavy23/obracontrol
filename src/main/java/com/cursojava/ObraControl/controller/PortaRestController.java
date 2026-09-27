@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cursojava.ObraControl.dto.CadastroPorta;
 import com.cursojava.ObraControl.model.Porta;
 import com.cursojava.ObraControl.service.PortaService;
 
@@ -25,28 +27,33 @@ public class PortaRestController {
     }
 
     @GetMapping
-    public List<Porta> listarTodas() {
-        return portaService.listarTodas();
+    public List<Porta> findByApartamento(@RequestParam Long apartamentoId) {
+        return portaService.findByApartamento(apartamentoId);
     }
 
     @GetMapping("/{id}")
-    public Porta buscarPorId(@PathVariable Long id) {
-        return portaService.buscarporId(id);
+    public Porta findById(@PathVariable Long id) {
+        return portaService.findById(id);
     }
 
     @PostMapping
-    public Porta cadastrar(@RequestBody Porta porta) {
-        return portaService.cadastrar(porta);
+    public Porta create(@RequestBody CadastroPorta cadastro) {
+        return portaService.create(cadastro);
+    }
+
+    @PutMapping("/{id}")
+    public Porta update(@PathVariable Long id, @RequestBody CadastroPorta cadastro) {
+        return portaService.update(id, cadastro);
     }
 
     @PutMapping("/{id}/etapas/{nomeEtapa}")
-    public Porta atualizarEtapa(@PathVariable Long id, @PathVariable("nomeEtapa") String nomeEtapa,
+    public Porta updateStage(@PathVariable Long id, @PathVariable("nomeEtapa") String nomeEtapa,
             @RequestBody boolean concluida) {
-        return portaService.atualizarEtapa(id, nomeEtapa, concluida);
+        return portaService.updateStage(id, nomeEtapa, concluida);
     }
 
     @DeleteMapping("/{id}")
-    public Porta excluir(@PathVariable Long id) {
-        return portaService.excluir(id);
+    public Porta delete(@PathVariable Long id) {
+        return portaService.delete(id);
     }
 }
