@@ -149,11 +149,11 @@ async function loadPortas() {
   const tbody = document.querySelector("#table_portas tbody");
   tbody.replaceChildren();
   document.querySelector("#new-porta").disabled = !apartmentId;
-  if (!apartamentoId) {
+  if (!apartmentId) {
     atualizarTitulo();
     return;
   }
-  const portas = await requestJson(`${PORTAS_URL}?apartamentoId=${apartamentoId}`);
+  const portas = await requestJson(`${PORTAS_URL}?apartamentoId=${apartmentId}`);
   if (!portas.length) {
     return;
   }
