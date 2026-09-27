@@ -30,11 +30,6 @@ public class ObrasController {
         return "checklist-apartamento";
     }
 
-    @GetMapping("/home")
-    public String home() {
-        return "Home";
-    }
-
     @GetMapping("/lista-obra")
     public String lita_obra() {
         return "lista-obra";

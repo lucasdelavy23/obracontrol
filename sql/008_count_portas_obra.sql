@@ -1,13 +1,13 @@
-use obracontrol;
-
-select
-	ob.nome,
-    COUNT(po.id) portas
-from 
-	porta po
-	inner join apartamento ap
-		on ap.id = po.apartamento_id
-	inner join obra ob
-		on ob.id = ap.obra_id
-group by
-	ob.nome
+SELECT
+    o.id,
+    o.nome,
+    COUNT(p.id) AS portas
+FROM obra o
+LEFT JOIN apartamento a
+    ON a.obra_id = o.id
+LEFT JOIN porta p
+    ON p.apartamento_id = a.id
+GROUP BY
+    o.id,
+    o.nome
+ORDER BY o.nome;

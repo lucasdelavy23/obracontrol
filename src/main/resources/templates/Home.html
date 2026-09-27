@@ -7,87 +7,208 @@
 >
   <head>
     <meta charset="UTF-8" />
-    <title>Obra Control</title>
+    <title>Visão Geral | Obra Control</title>
   </head>
 
   <body>
     <section layout:fragment="content">
-      <!-- Título da Página -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="m-0 text-dark">Visão Geral</h2>
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+          <h1 class="h2 mb-1 text-dark">Visão Geral</h1>
+          <p class="text-secondary mb-0">Acompanhamento atualizado das obras e instalações.</p>
+        </div>
+        <span class="badge text-bg-light border text-secondary">
+          <i class="bi bi-database-check me-1"></i>Dados do sistema
+        </span>
       </div>
 
-      <!-- Cards de Resumo (Dashboard) -->
+      <!-- Cadastros principais -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm h-100 border-start border-primary border-4">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-primary fw-bold text-uppercase small mb-1">Obras</div>
+                <div id="total-obras" class="fs-2 fw-bold text-dark" th:text="${dashboard.resumo.totalObras}">0</div>
+              </div>
+              <i class="bi bi-building fs-1 text-primary opacity-50"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm h-100 border-start border-success border-4">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-success fw-bold text-uppercase small mb-1">Apartamentos</div>
+                <div id="total-apartamentos" class="fs-2 fw-bold text-dark" th:text="${dashboard.resumo.totalApartamentos}">0</div>
+              </div>
+              <i class="bi bi-houses fs-1 text-success opacity-50"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm h-100 border-start border-warning border-4">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-warning-emphasis fw-bold text-uppercase small mb-1">Portas</div>
+                <div id="total-portas" class="fs-2 fw-bold text-dark" th:text="${dashboard.resumo.totalPortas}">0</div>
+              </div>
+              <i class="bi bi-door-open fs-1 text-warning opacity-75"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm h-100 border-start border-info border-4">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-info-emphasis fw-bold text-uppercase small mb-1">Instaladores</div>
+                <div id="total-instaladores" class="fs-2 fw-bold text-dark" th:text="${dashboard.resumo.totalInstaladores}">0</div>
+              </div>
+              <i class="bi bi-person-gear fs-1 text-info opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Situação e pendências -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 bg-primary-subtle h-100">
+            <div class="card-body">
+              <div class="small text-primary-emphasis fw-semibold">Obras abertas</div>
+              <div id="obras-abertas" class="fs-3 fw-bold" th:text="${dashboard.resumo.obrasAbertas}">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 bg-success-subtle h-100">
+            <div class="card-body">
+              <div class="small text-success-emphasis fw-semibold">Obras finalizadas</div>
+              <div id="obras-finalizadas" class="fs-3 fw-bold" th:text="${dashboard.resumo.obrasFinalizadas}">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 bg-success-subtle h-100">
+            <div class="card-body">
+              <div class="small text-success-emphasis fw-semibold">Portas concluídas</div>
+              <div id="portas-concluidas" class="fs-3 fw-bold" th:text="${dashboard.resumo.portasConcluidas}">0</div>
+              <div class="small text-secondary">Todas as 5 etapas</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 bg-warning-subtle h-100">
+            <div class="card-body">
+              <div class="small text-warning-emphasis fw-semibold">Sem instalador</div>
+              <div id="portas-sem-instalador" class="fs-3 fw-bold" th:text="${dashboard.resumo.portasSemInstalador}">0</div>
+              <div class="small text-secondary">Portas pendentes de atribuição</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progresso geral -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-end mb-2">
+            <div>
+              <h2 class="h5 mb-1">Progresso geral das instalações</h2>
+              <span class="small text-secondary">
+                <span th:text="${dashboard.resumo.etapasConcluidas}">0</span>
+                de
+                <span th:text="${dashboard.resumo.totalEtapas}">0</span>
+                etapas concluídas
+              </span>
+            </div>
+            <span id="progresso-geral" class="fs-4 fw-bold text-primary"
+                  th:text="|${dashboard.resumo.percentualGeral}%|">0%</span>
+          </div>
+          <div class="progress" role="progressbar" aria-label="Progresso geral" aria-valuemin="0" aria-valuemax="100"
+               th:attr="aria-valuenow=${dashboard.resumo.percentualGeral}">
+            <div class="progress-bar" th:style="|width: ${dashboard.resumo.percentualGeral}%|"
+                 th:text="|${dashboard.resumo.percentualGeral}%|">0%</div>
+          </div>
+        </div>
+      </div>
+
       <div class="row g-4">
-        <!-- Card 1: Total de Obras -->
-        <div class="col-12 col-md-4">
-          <div
-            class="card border-0 shadow-sm h-100 border-start border-primary border-4"
-          >
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <div
-                    class="text-primary fw-bold text-uppercase mb-1"
-                    style="font-size: 0.85rem"
-                  >
-                    Total de Obras
-                  </div>
-                  <div class="fs-3 fw-bold text-dark">12</div>
-                </div>
-                <div>
-                  <i class="bi bi-building fs-1 text-muted opacity-50"></i>
-                </div>
+        <!-- Progresso por obra -->
+        <div class="col-12 col-xl-8">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 pt-3 px-3">
+              <h2 class="h5 mb-0">Progresso por obra</h2>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive" th:if="${!dashboard.progressoObras.empty}">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th class="ps-3">Obra</th>
+                      <th>Status</th>
+                      <th class="text-center">Apartamentos</th>
+                      <th class="text-center">Portas</th>
+                      <th style="min-width: 180px">Progresso</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="obra : ${dashboard.progressoObras}">
+                      <td class="ps-3 fw-semibold" th:text="${obra.nome}">Nome da obra</td>
+                      <td>
+                        <span class="badge"
+                              th:classappend="${obra.status == 'finalizada'} ? 'text-bg-success' : 'text-bg-primary'"
+                              th:text="${obra.status == 'finalizada'} ? 'Finalizada' : 'Aberta'">Aberta</span>
+                      </td>
+                      <td class="text-center" th:text="${obra.quantidadeApartamentos}">0</td>
+                      <td class="text-center" th:text="${obra.quantidadePortas}">0</td>
+                      <td>
+                        <div class="d-flex justify-content-between small mb-1">
+                          <span>
+                            <span th:text="${obra.etapasConcluidas}">0</span>/<span th:text="${obra.totalEtapas}">0</span>
+                            etapas
+                          </span>
+                          <strong th:text="|${obra.percentual}%|">0%</strong>
+                        </div>
+                        <div class="progress" style="height: 8px" role="progressbar"
+                             th:attr="aria-label=|Progresso da obra ${obra.nome}|,aria-valuenow=${obra.percentual}"
+                             aria-valuemin="0" aria-valuemax="100">
+                          <div class="progress-bar"
+                               th:classappend="${obra.percentual == 100} ? 'bg-success' : ''"
+                               th:style="|width: ${obra.percentual}%|"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+              <p class="text-center text-secondary py-5 mb-0" th:if="${dashboard.progressoObras.empty}">
+                Nenhuma obra cadastrada.
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- Card 2: Apartamentos -->
-        <div class="col-12 col-md-4">
-          <div
-            class="card border-0 shadow-sm h-100 border-start border-success border-4"
-          >
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <div
-                    class="text-success fw-bold text-uppercase mb-1"
-                    style="font-size: 0.85rem"
-                  >
-                    Apartamentos
-                  </div>
-                  <div class="fs-3 fw-bold text-dark">45</div>
-                </div>
-                <div>
-                  <i class="bi bi-door-open fs-1 text-muted opacity-50"></i>
-                </div>
+        <!-- Carga dos instaladores -->
+        <div class="col-12 col-xl-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 pt-3 px-3">
+              <h2 class="h5 mb-0">Portas por instalador</h2>
+            </div>
+            <div class="list-group list-group-flush" th:if="${!dashboard.cargaInstaladores.empty}">
+              <div class="list-group-item d-flex justify-content-between align-items-center px-3 py-3"
+                   th:each="instalador : ${dashboard.cargaInstaladores}">
+                <span class="text-truncate me-3" th:text="${instalador.nome}">Instalador</span>
+                <span class="badge rounded-pill"
+                      th:classappend="${instalador.quantidadePortas > 0} ? 'text-bg-primary' : 'text-bg-secondary'"
+                      th:text="${instalador.quantidadePortas}">0</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Card 3: Instaladores -->
-        <div class="col-12 col-md-4">
-          <div
-            class="card border-0 shadow-sm h-100 border-start border-info border-4"
-          >
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <div
-                    class="text-info fw-bold text-uppercase mb-1"
-                    style="font-size: 0.85rem"
-                  >
-                    Instaladores
-                  </div>
-                  <div class="fs-3 fw-bold text-dark">8</div>
-                </div>
-                <div>
-                  <i class="bi bi-person-gear fs-1 text-muted opacity-50"></i>
-                </div>
-              </div>
-            </div>
+            <p class="text-center text-secondary py-5 mb-0" th:if="${dashboard.cargaInstaladores.empty}">
+              Nenhum instalador cadastrado.
+            </p>
           </div>
         </div>
       </div>
