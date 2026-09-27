@@ -27,14 +27,19 @@ async function requestJson(url, options) {
   const response = await fetch(url, options);
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.mensagem || "Não foi possível concluir a operação. Tente novamente.");
+    throw new Error(
+      error.mensagem ||
+        "Não foi possível concluir a operação. Tente novamente.",
+    );
   }
   return response.json();
 }
 
 function updateFormState() {
-  document.querySelector("#porta-fields").disabled = saving || loading || !formReady;
-  document.querySelector("#save-porta").disabled = saving || loading || !formReady;
+  document.querySelector("#porta-fields").disabled =
+    saving || loading || !formReady;
+  document.querySelector("#save-porta").disabled =
+    saving || loading || !formReady;
 }
 
 function populate(select, placeholder, itens) {
@@ -50,11 +55,17 @@ function catalogoObrasComoOpcoes() {
 }
 
 function catalogoApartamentosComoOpcoes() {
-  return catalogoApartamentos.map((apartamento) => ({ id: apartamento.id, rotulo: apartamento.numero }));
+  return catalogoApartamentos.map((apartamento) => ({
+    id: apartamento.id,
+    rotulo: apartamento.numero,
+  }));
 }
 
 function catalogoInstaladoresComoOpcoes() {
-  return catalogoInstaladores.map((instalador) => ({ id: instalador.id, rotulo: instalador.nome }));
+  return catalogoInstaladores.map((instalador) => ({
+    id: instalador.id,
+    rotulo: instalador.nome,
+  }));
 }
 
 function rotuloDaEtapa(etapa) {
@@ -62,9 +73,12 @@ function rotuloDaEtapa(etapa) {
 }
 
 function atualizarTitulo() {
-  const obra = catalogoObras.find((item) => String(item.id) === document.querySelector("#obra-filtro").value);
+  const obra = catalogoObras.find(
+    (item) => String(item.id) === document.querySelector("#obra-filtro").value,
+  );
   const apartamento = catalogoApartamentos.find(
-    (item) => String(item.id) === document.querySelector("#apartamento-filtro").value,
+    (item) =>
+      String(item.id) === document.querySelector("#apartamento-filtro").value,
   );
   const partes = [];
   if (obra) partes.push(`Obra: ${obra.nome}`);
@@ -74,7 +88,9 @@ function atualizarTitulo() {
 
 function atualizarProgresso(row) {
   const checkboxes = row.querySelectorAll('input[type="checkbox"]');
-  const concluidas = [...checkboxes].filter((checkbox) => checkbox.checked).length;
+  const concluidas = [...checkboxes].filter(
+    (checkbox) => checkbox.checked,
+  ).length;
   const badge = row.querySelector("#progresso-badge");
   badge.textContent = `${concluidas}/${checkboxes.length}`;
   badge.className = `badge ${concluidas === checkboxes.length ? "text-bg-success" : "text-bg-secondary"}`;
@@ -84,11 +100,14 @@ async function alternarEtapa(porta, etapa, checkbox) {
   const concluida = checkbox.checked;
   checkbox.disabled = true;
   try {
-    await requestJson(`${PORTAS_URL}/${porta.id}/etapas/${encodeURIComponent(etapa)}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(concluida),
-    });
+    await requestJson(
+      `${PORTAS_URL}/${porta.id}/etapas/${encodeURIComponent(etapa)}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(concluida),
+      },
+    );
     showMessage("#checklist-message");
     atualizarProgresso(checkbox.closest("tr"));
   } catch (error) {
@@ -137,23 +156,39 @@ function montarLinha(porta) {
 
   const celulaInstalador = row.insertCell();
   const selectInstalador = document.createElement("select");
-  populate(selectInstalador, "Sem instalador", catalogoInstaladoresComoOpcoes());
+  populate(
+    selectInstalador,
+    "Sem instalador",
+    catalogoInstaladoresComoOpcoes(),
+  );
   selectInstalador.className = "form-select form-select-sm";
   selectInstalador.setAttribute("aria-label", "Instalador da porta");
   selectInstalador.value = porta.instaladorId ?? "";
-  selectInstalador.addEventListener("change", () => atribuirInstalador(porta, selectInstalador));
+  selectInstalador.addEventListener("change", () =>
+    atribuirInstalador(porta, selectInstalador),
+  );
   celulaInstalador.append(selectInstalador);
 
   for (const [etapa, concluida] of Object.entries(porta.etapas)) {
     const celula = row.insertCell();
-    celula.className = "text-center";
+    celula.className = "text-center align-middle";
+    celula.style.minWidth = "120px";
+    const wrapper = document.createElement("div");
+    wrapper.className =
+      "d-flex flex-column align-items-center justify-content-center gap-1";
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.className = "form-check-input";
+    checkbox.className = "form-check-input mt-1";
     checkbox.checked = concluida;
     checkbox.setAttribute("aria-label", rotuloDaEtapa(etapa));
-    checkbox.addEventListener("change", () => alternarEtapa(porta, etapa, checkbox));
-    celula.append(checkbox);
+    checkbox.addEventListener("change", () =>
+      alternarEtapa(porta, etapa, checkbox),
+    );
+    const label = document.createElement("small");
+    label.className = "text-secondary fw-semibold";
+    label.textContent = rotuloDaEtapa(etapa);
+    wrapper.append(checkbox, label);
+    celula.append(wrapper);
   }
 
   const progresso = row.insertCell();
@@ -181,25 +216,56 @@ function montarLinha(porta) {
 }
 
 function montarCabecalhoEtapas(etapas) {
-  document.querySelector("#etapas-header").replaceChildren();
-  for (const etapa of etapas) {
-    const th = document.createElement("span");
-    th.className = "d-block small fw-semibold";
-    th.textContent = rotuloDaEtapa(etapa);
-    document.querySelector("#etapas-header").append(th);
+  const headerRow = document.querySelector("#portas-header-row");
+  headerRow.replaceChildren();
+
+  const colunasFixas = ["ID", "Local", "Instalador"];
+  for (const texto of colunasFixas) {
+    const th = document.createElement("th");
+    th.textContent = texto;
+    headerRow.append(th);
   }
+
+  for (const etapa of etapas) {
+    const th = document.createElement("th");
+    th.className = "text-center small fw-semibold align-middle";
+    th.style.minWidth = "120px";
+    th.textContent = rotuloDaEtapa(etapa);
+    headerRow.append(th);
+  }
+
+  const progressoHeader = document.createElement("th");
+  progressoHeader.className = "text-center";
+  progressoHeader.textContent = "Progresso";
+  headerRow.append(progressoHeader);
+
+  const opcoesHeader = document.createElement("th");
+  opcoesHeader.className = "text-end";
+  opcoesHeader.textContent = "Opções";
+  headerRow.append(opcoesHeader);
 }
 
 async function loadPortas() {
-  const apartmentId = document.querySelector("#apartamento-filtro").value;
+  const selectApartamento = document.querySelector("#apartamento-filtro");
+  const apartmentId = selectApartamento.value;
   const tbody = document.querySelector("#table_portas tbody");
   tbody.replaceChildren();
-  document.querySelector("#new-porta").disabled = !apartmentId;
-  if (!apartmentId) {
+
+  if (!apartmentId && catalogoApartamentos.length) {
+    selectApartamento.value = catalogoApartamentos[0].id;
+  }
+
+  const apartamentoSelecionado = selectApartamento.value;
+  document.querySelector("#new-porta").disabled = !apartamentoSelecionado;
+
+  if (!apartamentoSelecionado) {
     atualizarTitulo();
     return;
   }
-  const portas = await requestJson(`${PORTAS_URL}?apartamentoId=${apartmentId}`);
+
+  const portas = await requestJson(
+    `${PORTAS_URL}?apartamentoId=${apartamentoSelecionado}`,
+  );
   if (!portas.length) {
     return;
   }
@@ -218,8 +284,12 @@ async function loadApartamentos(obraId) {
     populate(select, "Nenhuma obra selecionada", []);
     return;
   }
-  catalogoApartamentos = await requestJson(`${APARTAMENTOS_URL}?obraId=${obraId}`);
-  const placeholder = catalogoApartamentos.length ? "Selecione um apartamento" : "Nenhum apartamento cadastrado";
+  catalogoApartamentos = await requestJson(
+    `${APARTAMENTOS_URL}?obraId=${obraId}`,
+  );
+  const placeholder = catalogoApartamentos.length
+    ? "Selecione um apartamento"
+    : "Nenhum apartamento cadastrado";
   populate(select, placeholder, catalogoApartamentosComoOpcoes());
   if (catalogoApartamentos.length) {
     select.value = catalogoApartamentos[0].id;
@@ -232,12 +302,17 @@ async function openPorta(id = null) {
   loading = true;
   formReady = false;
   document.querySelector("#porta-form").reset();
-  document.querySelector("#modal_porta .modal-title").textContent =
-    id ? "Editar Porta" : "Cadastrar Nova Porta";
-  document.querySelector("#save-porta").textContent = id ? "Salvar alterações" : "Cadastrar Porta";
+  document.querySelector("#modal_porta .modal-title").textContent = id
+    ? "Editar Porta"
+    : "Cadastrar Nova Porta";
+  document.querySelector("#save-porta").textContent = id
+    ? "Salvar alterações"
+    : "Cadastrar Porta";
   showMessage("#porta-form-message");
   updateFormState();
-  bootstrap.Modal.getOrCreateInstance(document.querySelector("#modal_porta")).show();
+  bootstrap.Modal.getOrCreateInstance(
+    document.querySelector("#modal_porta"),
+  ).show();
   try {
     populate(
       document.querySelector("#apartamento"),
@@ -255,7 +330,9 @@ async function openPorta(id = null) {
       document.querySelector("#apartamento").value = porta.apartamentoId;
       document.querySelector("#instalador").value = porta.instaladorId ?? "";
     } else {
-      document.querySelector("#apartamento").value = document.querySelector("#apartamento-filtro").value;
+      document.querySelector("#apartamento").value = document.querySelector(
+        "#apartamento-filtro",
+      ).value;
     }
     formReady = true;
   } catch (error) {
@@ -280,7 +357,9 @@ async function savePorta(event) {
       body: JSON.stringify({
         local: document.querySelector("#local").value,
         apartamentoId: Number(document.querySelector("#apartamento").value),
-        instaladorId: instaladorIdDoSelect(document.querySelector("#instalador")),
+        instaladorId: instaladorIdDoSelect(
+          document.querySelector("#instalador"),
+        ),
       }),
     });
   } catch (error) {
@@ -290,12 +369,17 @@ async function savePorta(event) {
     saving = false;
     updateFormState();
   }
-  bootstrap.Modal.getOrCreateInstance(document.querySelector("#modal_porta")).hide();
+  bootstrap.Modal.getOrCreateInstance(
+    document.querySelector("#modal_porta"),
+  ).hide();
   showMessage("#checklist-message");
   try {
     await loadPortas();
   } catch (error) {
-    showMessage("#checklist-message", "Porta salva, mas a listagem não pôde ser atualizada. Recarregue a página.");
+    showMessage(
+      "#checklist-message",
+      "Porta salva, mas a listagem não pôde ser atualizada. Recarregue a página.",
+    );
   }
 }
 
@@ -311,36 +395,50 @@ async function removePorta(id) {
 }
 
 async function init() {
-  document.querySelector("#new-porta").addEventListener("click", () => openPorta());
+  document
+    .querySelector("#new-porta")
+    .addEventListener("click", () => openPorta());
   document.querySelector("#porta-form").addEventListener("submit", savePorta);
-  document.querySelector("#obra-filtro").addEventListener("change", async (event) => {
-    showMessage("#checklist-message");
-    try {
-      await loadApartamentos(event.target.value);
-      await loadPortas();
-    } catch (error) {
-      showMessage("#checklist-message", error.message);
-    }
-  });
-  document.querySelector("#apartamento-filtro").addEventListener("change", async () => {
-    showMessage("#checklist-message");
-    try {
-      await loadPortas();
-    } catch (error) {
-      showMessage("#checklist-message", error.message);
-    }
-  });
-  document.querySelector("#modal_porta").addEventListener("hide.bs.modal", (event) => {
-    if (saving || loading) event.preventDefault();
-  });
+  document
+    .querySelector("#obra-filtro")
+    .addEventListener("change", async (event) => {
+      showMessage("#checklist-message");
+      try {
+        await loadApartamentos(event.target.value);
+        await loadPortas();
+      } catch (error) {
+        showMessage("#checklist-message", error.message);
+      }
+    });
+  document
+    .querySelector("#apartamento-filtro")
+    .addEventListener("change", async () => {
+      showMessage("#checklist-message");
+      try {
+        await loadPortas();
+      } catch (error) {
+        showMessage("#checklist-message", error.message);
+      }
+    });
+  document
+    .querySelector("#modal_porta")
+    .addEventListener("hide.bs.modal", (event) => {
+      if (saving || loading) event.preventDefault();
+    });
 
   try {
     [catalogoObras, catalogoInstaladores] = await Promise.all([
       requestJson(OBRAS_URL),
       requestJson(INSTALADORES_URL),
     ]);
-    const placeholder = catalogoObras.length ? "Selecione uma obra" : "Nenhuma obra cadastrada";
-    populate(document.querySelector("#obra-filtro"), placeholder, catalogoObrasComoOpcoes());
+    const placeholder = catalogoObras.length
+      ? "Selecione uma obra"
+      : "Nenhuma obra cadastrada";
+    populate(
+      document.querySelector("#obra-filtro"),
+      placeholder,
+      catalogoObrasComoOpcoes(),
+    );
     if (catalogoObras.length) {
       document.querySelector("#obra-filtro").value = catalogoObras[0].id;
       await loadApartamentos(catalogoObras[0].id);

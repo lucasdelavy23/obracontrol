@@ -1,6 +1,7 @@
 package com.cursojava.ObraControl.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ObrasController {
@@ -26,7 +27,8 @@ public class ObrasController {
     }
 
     @GetMapping("/checklist-apartamento")
-    public String checklist_apartamento() {
+    public String checklist_apartamento(Model model) {
+        model.addAttribute("cacheBust", System.currentTimeMillis());
         return "checklist-apartamento";
     }
 

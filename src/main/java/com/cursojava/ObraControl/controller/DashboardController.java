@@ -15,6 +15,11 @@ public class DashboardController {
         this.dashboardService = dashboardService;
     }
 
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/home";
+    }
+
     @GetMapping("/home")
     public String home(Model model) {
         model.addAttribute("dashboard", dashboardService.getDashboard());

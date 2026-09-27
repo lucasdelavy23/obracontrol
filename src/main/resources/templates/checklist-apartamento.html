@@ -22,7 +22,12 @@
         </button>
       </div>
 
-      <div id="checklist-message" class="alert alert-danger mt-3" role="alert" hidden></div>
+      <div
+        id="checklist-message"
+        class="alert alert-danger mt-3"
+        role="alert"
+        hidden
+      ></div>
 
       <div class="row g-3 mt-1">
         <div class="col-md-5">
@@ -30,21 +35,16 @@
           <select id="obra-filtro" class="form-select" disabled></select>
         </div>
         <div class="col-md-4">
-          <label for="apartamento-filtro" class="form-label">Apartamento:</label>
+          <label for="apartamento-filtro" class="form-label"
+            >Apartamento:</label
+          >
           <select id="apartamento-filtro" class="form-select" disabled></select>
         </div>
       </div>
 
       <table class="table align-middle mt-3" id="table_portas">
         <thead>
-          <tr>
-            <th>ID</th>
-            <th>Local</th>
-            <th>Instalador</th>
-            <th class="text-center" id="etapas-header"></th>
-            <th class="text-center">Progresso</th>
-            <th class="text-end">Opções</th>
-          </tr>
+          <tr id="portas-header-row"></tr>
         </thead>
         <tbody></tbody>
       </table>
@@ -63,11 +63,24 @@
               ></button>
             </div>
             <div class="modal-body">
-              <div id="porta-form-message" class="alert alert-danger" role="alert" hidden></div>
+              <div
+                id="porta-form-message"
+                class="alert alert-danger"
+                role="alert"
+                hidden
+              ></div>
               <fieldset id="porta-fields">
                 <div class="mb-3">
-                  <label for="apartamento" class="form-label">Apartamento:</label>
-                  <select name="apartamento" id="apartamento" class="form-select" required disabled></select>
+                  <label for="apartamento" class="form-label"
+                    >Apartamento:</label
+                  >
+                  <select
+                    name="apartamento"
+                    id="apartamento"
+                    class="form-select"
+                    required
+                    disabled
+                  ></select>
                 </div>
                 <div class="mb-3">
                   <label for="local" class="form-label">Local:</label>
@@ -83,7 +96,12 @@
                 </div>
                 <div class="mb-3">
                   <label for="instalador" class="form-label">Instalador:</label>
-                  <select name="instalador" id="instalador" class="form-select" disabled></select>
+                  <select
+                    name="instalador"
+                    id="instalador"
+                    class="form-select"
+                    disabled
+                  ></select>
                 </div>
               </fieldset>
             </div>
@@ -107,7 +125,10 @@
           </form>
         </div>
       </div>
-      <script th:src="@{/checklist.js}"></script>
+      <script
+        th:src="@{/checklist.js(v=${cacheBust})}"
+        defer
+      ></script>
     </section>
   </body>
 </html>
