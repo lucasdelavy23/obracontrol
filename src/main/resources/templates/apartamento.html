@@ -6,65 +6,93 @@
   layout:decorate="~{layout/base}"
 >
   <head>
+    <meta charset="UTF-8" />
     <title>Cadastro de Apartamento</title>
   </head>
+
   <body>
     <section layout:fragment="content">
-      <h1>Cadastro de Apartamento</h1>
+      <div class="d-flex justify-content-between">
+        <h1>Cadastro de Apartamento</h1>
+        <button class="btn btn-primary" id="new-apartamento">
+          Novo apartamento
+        </button>
+      </div>
 
-      <form action="/apartamento/salvar" method="post">
-        <div>
-          <label>Número do Apartamento:</label>
-          <input type="text" name="apartamento" />
+      <div id="apartamento-message" class="alert alert-danger mt-3" role="alert" hidden></div>
+
+      <div class="mb-3" style="max-width: 480px">
+        <label for="obra-filtro" class="form-label">Obra:</label>
+        <select id="obra-filtro" class="form-select" disabled></select>
+      </div>
+
+      <table class="table" id="table_apartamentos">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Número</th>
+            <th>Obra</th>
+            <th>Portas</th>
+            <th>Opções</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- Modal -->
+      <div class="modal" tabindex="-1" id="modal_apartamento">
+        <div class="modal-dialog">
+          <form class="modal-content" id="apartamento-form">
+            <div class="modal-header">
+              <h5 class="modal-title">Cadastrar Novo Apartamento</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Fechar"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div id="apartamento-form-message" class="alert alert-danger" role="alert" hidden></div>
+              <fieldset id="apartamento-fields">
+                <div class="mb-3">
+                  <label for="obra" class="form-label">Obra:</label>
+                  <select name="obra" id="obra" class="form-select" required disabled></select>
+                </div>
+                <div class="mb-3">
+                  <label for="numero" class="form-label">Número do Apartamento:</label>
+                  <input
+                    type="text"
+                    name="numero"
+                    id="numero"
+                    class="form-control"
+                    required
+                    maxlength="50"
+                  />
+                </div>
+              </fieldset>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Fechar
+              </button>
+              <button
+                type="submit"
+                id="save-apartamento"
+                class="btn btn-primary"
+                disabled
+              >
+                Cadastrar Apartamento
+              </button>
+            </div>
+          </form>
         </div>
-
-        <br />
-
-        <div>
-          <label>Quantidade de Portas:</label>
-          <input type="number" name="quantidadePortas" />
-        </div>
-
-        <br />
-
-        <div>
-          <label>Endereço:</label>
-          <input type="text" name="endereco" />
-        </div>
-
-        <!-- <br /><br />
-
-        <h2>Porta 1</h2>
-
-        <h3>Processos</h3>
-
-        <input type="checkbox" name="montagem" />
-        <label>Montagem</label><br />
-
-        <input type="checkbox" name="espumar" />
-        <label>Espumar</label><br />
-
-        <input type="checkbox" name="fechadura" />
-        <label>Fixar</label><br />
-
-        <input type="checkbox" name="vista" />
-        <label>Vista</label><br />
-
-        <input type="checkbox" name="silicone" />
-        <label>Silicone</label>
-
-        <br /><br />
-
-        <button type="submit">Salvar</button>
-
-        <br /><br />
-
-        <button type="/">Home</button>
-      </form>
-    </section>
-  </body>
-</html> -->
-      </form>
+      </div>
+      <script th:src="@{/apartamento.js}"></script>
     </section>
   </body>
 </html>

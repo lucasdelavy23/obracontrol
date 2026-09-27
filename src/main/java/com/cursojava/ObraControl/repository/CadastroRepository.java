@@ -44,4 +44,8 @@ public class CadastroRepository {
     public boolean builderExists(Long id) {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM construtora WHERE id = ?", Long.class, id) > 0;
     }
+
+    public boolean obraExists(Long id) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obra WHERE id = ?", Long.class, id) > 0;
+    }
 }

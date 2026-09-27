@@ -6,6 +6,9 @@ import java.util.List;
 public class Apartamento {
     private Long id;
     private String numero;
+    private Long obraId;
+    private String obra;
+    private int quantidadePortas;
     private List<Porta> portas = new ArrayList<>();
 
     public Apartamento() {
@@ -30,6 +33,30 @@ public class Apartamento {
 
     public void setNumero(String numero) {
         this.numero = numero;
+    }
+
+    public Long getObraId() {
+        return obraId;
+    }
+
+    public void setObraId(Long obraId) {
+        this.obraId = obraId;
+    }
+
+    public String getObra() {
+        return obra;
+    }
+
+    public void setObra(String obra) {
+        this.obra = obra;
+    }
+
+    public int getQuantidadePortas() {
+        return quantidadePortas;
+    }
+
+    public void setQuantidadePortas(int quantidadePortas) {
+        this.quantidadePortas = quantidadePortas;
     }
 
     public List<Porta> getPortas() {
