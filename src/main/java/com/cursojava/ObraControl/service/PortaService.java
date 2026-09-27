@@ -11,6 +11,7 @@ import com.cursojava.ObraControl.dto.CadastroPorta;
 import com.cursojava.ObraControl.model.EtapaPorta;
 import com.cursojava.ObraControl.model.Porta;
 import com.cursojava.ObraControl.repository.ApartamentoRepository;
+import com.cursojava.ObraControl.repository.InstaladorRepository;
 import com.cursojava.ObraControl.repository.PortaRepository;
 
 @Service
@@ -18,10 +19,13 @@ public class PortaService {
 
     private final PortaRepository portaRepository;
     private final ApartamentoRepository apartamentoRepository;
+    private final InstaladorRepository instaladorRepository;
 
-    public PortaService(PortaRepository portaRepository, ApartamentoRepository apartamentoRepository) {
+    public PortaService(PortaRepository portaRepository, ApartamentoRepository apartamentoRepository,
+            InstaladorRepository instaladorRepository) {
         this.portaRepository = portaRepository;
         this.apartamentoRepository = apartamentoRepository;
+        this.instaladorRepository = instaladorRepository;
     }
 
     public List<Porta> findByApartamento(Long apartamentoId) {
@@ -92,6 +96,10 @@ public class PortaService {
                 || apartamentoRepository.findById(cadastro.apartamentoId()) == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selecione um apartamento válido.");
         }
-        return new CadastroPorta(cadastro.local().strip(), cadastro.apartamentoId());
+        if (cadastro.instaladorId() != null
+                && (cadastro.instaladorId() <= 0 || instaladorRepository.buscarPorId(cadastro.instaladorId()) == null)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selecione um instalador válido.");
+        }
+        return new CadastroPorta(cadastro.local().strip(), cadastro.apartamentoId(), cadastro.instaladorId());
     }
 }

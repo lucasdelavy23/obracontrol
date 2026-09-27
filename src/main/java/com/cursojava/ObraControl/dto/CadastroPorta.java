@@ -1,4 +1,4 @@
 package com.cursojava.ObraControl.dto;
 
-public record CadastroPorta(String local, Long apartamentoId) {
+public record CadastroPorta(String local, Long apartamentoId, Long instaladorId) {
 }

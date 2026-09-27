@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -45,10 +46,11 @@ public class PortaRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO porta (local, apartamento_id) VALUES (?, ?)",
+                    "INSERT INTO porta (local, apartamento_id, instalador_id) VALUES (?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, cadastro.local());
             ps.setLong(2, cadastro.apartamentoId());
+            definirInstalador(ps, 3, cadastro.instaladorId());
             return ps;
         }, keyHolder);
 
@@ -56,9 +58,28 @@ public class PortaRepository {
     }
 
     public Porta update(Long id, CadastroPorta cadastro) {
-        jdbcTemplate.update("UPDATE porta SET local = ?, apartamento_id = ? WHERE id = ?",
-                cadastro.local(), cadastro.apartamentoId(), id);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "UPDATE porta SET local = ?, apartamento_id = ?, instalador_id = ? WHERE id = ?");
+            ps.setString(1, cadastro.local());
+            ps.setLong(2, cadastro.apartamentoId());
+            definirInstalador(ps, 3, cadastro.instaladorId());
+            ps.setLong(4, id);
+            return ps;
+        });
         return findById(id);
+    }
+
+    /**
+     * O instalador é opcional: quando não informado, grava NULL explicitamente
+     * em vez de confiar na conversão automática do driver.
+     */
+    private void definirInstalador(PreparedStatement ps, int indice, Long instaladorId) throws SQLException {
+        if (instaladorId == null) {
+            ps.setNull(indice, Types.BIGINT);
+        } else {
+            ps.setLong(indice, instaladorId);
+        }
     }
 
     public Porta delete(Long id) {

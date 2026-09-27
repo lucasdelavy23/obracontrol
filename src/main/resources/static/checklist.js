@@ -1,6 +1,7 @@
 const PORTAS_URL = "/api/portas";
 const OBRAS_URL = "/api/obras";
 const APARTAMENTOS_URL = "/api/apartamentos";
+const INSTALADORES_URL = "/api/instaladores";
 const ROTULOS_ETAPA = {
   montagem: "Montagem",
   fixacao: "Fixação",
@@ -14,6 +15,7 @@ let loading = false;
 let formReady = false;
 let catalogoObras = [];
 let catalogoApartamentos = [];
+let catalogoInstaladores = [];
 
 function showMessage(selector, message = "") {
   const element = document.querySelector(selector);
@@ -49,6 +51,10 @@ function catalogoObrasComoOpcoes() {
 
 function catalogoApartamentosComoOpcoes() {
   return catalogoApartamentos.map((apartamento) => ({ id: apartamento.id, rotulo: apartamento.numero }));
+}
+
+function catalogoInstaladoresComoOpcoes() {
+  return catalogoInstaladores.map((instalador) => ({ id: instalador.id, rotulo: instalador.nome }));
 }
 
 function rotuloDaEtapa(etapa) {
@@ -93,10 +99,50 @@ async function alternarEtapa(porta, etapa, checkbox) {
   }
 }
 
+/**
+ * Troca o instalador da porta reaproveitando o PUT de edição da própria porta,
+ * mantendo um único caminho de escrita para local, apartamento e instalador.
+ */
+async function atribuirInstalador(porta, select) {
+  const instaladorId = instaladorIdDoSelect(select);
+  select.disabled = true;
+  try {
+    await requestJson(`${PORTAS_URL}/${porta.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        local: porta.local,
+        apartamentoId: porta.apartamentoId,
+        instaladorId,
+      }),
+    });
+    porta.instaladorId = instaladorId;
+    showMessage("#checklist-message");
+  } catch (error) {
+    select.value = porta.instaladorId ?? "";
+    showMessage("#checklist-message", error.message);
+  } finally {
+    select.disabled = false;
+  }
+}
+
+function instaladorIdDoSelect(select) {
+  return select.value === "" ? null : Number(select.value);
+}
+
 function montarLinha(porta) {
   const row = document.createElement("tr");
   row.insertCell().textContent = porta.id;
   row.insertCell().textContent = porta.local;
+
+  const celulaInstalador = row.insertCell();
+  const selectInstalador = document.createElement("select");
+  populate(selectInstalador, "Sem instalador", catalogoInstaladoresComoOpcoes());
+  selectInstalador.className = "form-select form-select-sm";
+  selectInstalador.setAttribute("aria-label", "Instalador da porta");
+  selectInstalador.value = porta.instaladorId ?? "";
+  selectInstalador.addEventListener("change", () => atribuirInstalador(porta, selectInstalador));
+  celulaInstalador.append(selectInstalador);
 
   for (const [etapa, concluida] of Object.entries(porta.etapas)) {
     const celula = row.insertCell();
@@ -198,10 +244,16 @@ async function openPorta(id = null) {
       "Selecione um apartamento",
       catalogoApartamentosComoOpcoes(),
     );
+    populate(
+      document.querySelector("#instalador"),
+      "Sem instalador",
+      catalogoInstaladoresComoOpcoes(),
+    );
     if (id) {
       const porta = await requestJson(`${PORTAS_URL}/${id}`);
       document.querySelector("#local").value = porta.local;
       document.querySelector("#apartamento").value = porta.apartamentoId;
+      document.querySelector("#instalador").value = porta.instaladorId ?? "";
     } else {
       document.querySelector("#apartamento").value = document.querySelector("#apartamento-filtro").value;
     }
@@ -228,6 +280,7 @@ async function savePorta(event) {
       body: JSON.stringify({
         local: document.querySelector("#local").value,
         apartamentoId: Number(document.querySelector("#apartamento").value),
+        instaladorId: instaladorIdDoSelect(document.querySelector("#instalador")),
       }),
     });
   } catch (error) {
@@ -282,7 +335,10 @@ async function init() {
   });
 
   try {
-    catalogoObras = await requestJson(OBRAS_URL);
+    [catalogoObras, catalogoInstaladores] = await Promise.all([
+      requestJson(OBRAS_URL),
+      requestJson(INSTALADORES_URL),
+    ]);
     const placeholder = catalogoObras.length ? "Selecione uma obra" : "Nenhuma obra cadastrada";
     populate(document.querySelector("#obra-filtro"), placeholder, catalogoObrasComoOpcoes());
     if (catalogoObras.length) {

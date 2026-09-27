@@ -28,6 +28,8 @@ class PortaTests {
     @Autowired private CadastroExceptionHandler exceptionHandler;
     @Autowired private JdbcTemplate jdbcTemplate;
     private MockMvc mvc;
+    private long instaladorCarlos;
+    private long instaladorAna;
 
     @BeforeEach
     void setUp() {
@@ -37,6 +39,10 @@ class PortaTests {
         jdbcTemplate.update("INSERT INTO apartamento (id, numero, obra_id) VALUES (101, '101', 1)");
         jdbcTemplate.update("INSERT INTO apartamento (id, numero, obra_id) VALUES (102, '102', 1)");
         jdbcTemplate.update("INSERT INTO apartamento (id, numero, obra_id) VALUES (201, '201', 900)");
+        jdbcTemplate.update("INSERT INTO instalador (id, nome, telefone) VALUES (2, 'Ana Souza', '(48) 99999-2002')");
+        instaladorCarlos = jdbcTemplate.queryForObject(
+                "SELECT MIN(id) FROM instalador WHERE nome = 'Carlos Eduardo Silva'", Long.class);
+        instaladorAna = 2L;
     }
 
     @Test
@@ -183,7 +189,7 @@ class PortaTests {
     }
 
     @Test
-    void shouldLeaveInstaladorNuloAndDeletePortasWithApartamento() throws Exception {
+    void shouldLeaveInstaladorNuloWhenNotInformedAndDeletePortasWithApartamento() throws Exception {
         Long id = criar("Entrada", 101);
         assertNull(jdbcTemplate.queryForObject("SELECT instalador_id FROM porta WHERE id = ?", Long.class, id));
         assertEquals(1L, quantidadePortas(101));
@@ -191,6 +197,103 @@ class PortaTests {
         assertEquals(0L, countPortas());
         assertEquals(0L, jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM apartamento WHERE id = 101", Long.class));
+    }
+
+    @Test
+    void shouldAssignChangeAndRemoveInstaller() throws Exception {
+        String resposta = mvc.perform(post("/api/portas").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":" + instaladorCarlos + "}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.instaladorId").value((int) instaladorCarlos))
+                .andReturn().getResponse().getContentAsString();
+        Long id = Long.parseLong(resposta.replaceAll(".*\"id\":(\\d+).*", "$1"));
+        assertEquals(Long.valueOf(instaladorCarlos), instaladorId(id));
+
+        mvc.perform(put("/api/portas/" + id).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":" + instaladorAna + "}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.instaladorId").value((int) instaladorAna))
+                .andExpect(jsonPath("$.local").value("Sala"));
+        assertEquals(Long.valueOf(instaladorAna), instaladorId(id));
+
+        mvc.perform(put("/api/portas/" + id).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":null}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.instaladorId").doesNotExist());
+        assertNull(instaladorId(id));
+
+        mvc.perform(get("/api/portas").param("apartamentoId", "101"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].instaladorId").doesNotExist());
+    }
+
+    @Test
+    void shouldRejectInvalidInstallerWithoutWriting() throws Exception {
+        for (String body : new String[] {
+                "{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":0}",
+                "{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":-1}",
+                "{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":99999}",
+                "{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":\"abc\"}"
+        }) {
+            mvc.perform(post("/api/portas").contentType(MediaType.APPLICATION_JSON).content(body))
+                    .andExpect(status().isBadRequest());
+        }
+        assertEquals(0L, countPortas());
+        Long id = criar("Sala", 101);
+        for (String body : new String[] {
+                "{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":0}",
+                "{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":99999}"
+        }) {
+            mvc.perform(put("/api/portas/" + id).contentType(MediaType.APPLICATION_JSON).content(body))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.mensagem").value("Selecione um instalador válido."));
+        }
+        assertEquals("Sala", jdbcTemplate.queryForObject("SELECT local FROM porta WHERE id = ?", String.class, id));
+        assertNull(instaladorId(id));
+    }
+
+    @Test
+    void shouldKeepInstallerOnStageUpdate() throws Exception {
+        Long id = criar("Sala", 101);
+        mvc.perform(put("/api/portas/" + id).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":" + instaladorAna + "}"))
+                .andExpect(status().isOk());
+        mvc.perform(put("/api/portas/" + id + "/etapas/montagem").contentType(MediaType.APPLICATION_JSON)
+                .content("true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.etapas.montagem").value(true))
+                .andExpect(jsonPath("$.instaladorId").value((int) instaladorAna));
+        assertEquals(Long.valueOf(instaladorAna), instaladorId(id));
+    }
+
+    @Test
+    void shouldClearInstallerWhenInstallerIsDeleted() throws Exception {
+        Long id = criar("Sala", 101);
+        mvc.perform(put("/api/portas/" + id).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"local\":\"Sala\",\"apartamentoId\":101,\"instaladorId\":" + instaladorAna + "}"))
+                .andExpect(status().isOk());
+        jdbcTemplate.update("DELETE FROM instalador WHERE id = ?", instaladorAna);
+        assertNull(instaladorId(id));
+        mvc.perform(get("/api/portas/" + id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.local").value("Sala"))
+                .andExpect(jsonPath("$.instaladorId").doesNotExist());
+    }
+
+    @Test
+    void shouldNotChangeQuantidadePortasWhenAssigningInstaller() throws Exception {
+        assertEquals(0L, quantidadePortas(101));
+        Long id = criar("Entrada", 101);
+        criar("Sala", 101);
+        assertEquals(2L, quantidadePortas(101));
+        mvc.perform(put("/api/portas/" + id).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"local\":\"Entrada\",\"apartamentoId\":101,\"instaladorId\":" + instaladorAna + "}"))
+                .andExpect(status().isOk());
+        assertEquals(2L, quantidadePortas(101));
+    }
+
+    private Long instaladorId(long portaId) {
+        return jdbcTemplate.queryForObject("SELECT instalador_id FROM porta WHERE id = ?", Long.class, portaId);
     }
 
     private Long criar(String local, long apartamentoId) throws Exception {
