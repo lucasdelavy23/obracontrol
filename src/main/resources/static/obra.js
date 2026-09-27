@@ -1,137 +1,187 @@
-const GLOBAL_URL = `/api/obras`;
-async function carregarObras() {
-  const resposta = await fetch(GLOBAL_URL);
-  const obras = await resposta.json();
+const GLOBAL_URL = "/api/obras";
+let cityRequest = 0;
+let saving = false;
+let editingId = null;
+let loading = false;
+let formReady = false;
 
-  listarInstaladores(obras);
+function showMessage(selector, message = "") {
+  const element = document.querySelector(selector);
+  element.textContent = message;
+  element.hidden = !message;
 }
 
-function listarInstaladores(obras) {
-  let html = "";
-  for (const obra of obras) {
-    html += `
-    <tr>
-      <td>${obra.id}</td>
-      <td>${obra.nome}</td>
-      <td>${obra.construtora}</td>
-      <td>${obra.cidade}</td>
-      <td>${obra.endereco}</td>
-      <td><button class="btn btn-danger" onclick="removerObra(${obra.id})" >Remover</button></td>
-    </tr>
-    `;
+async function requestJson(url, options) {
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.mensagem || "Não foi possível concluir a operação. Tente novamente.");
   }
+  return response.json();
+}
 
+function populateSelect(selector, items, placeholder, label = (item) => item.nome) {
+  const select = document.querySelector(selector);
+  select.replaceChildren(new Option(placeholder, ""));
+  for (const item of items) {
+    select.add(new Option(label(item), item.id));
+  }
+  select.disabled = items.length === 0;
+}
+
+function updateSaveButton() {
+  document.querySelector("#obra-fields").disabled = saving || loading || !formReady;
+  document.querySelector("#save-obra").disabled = saving || loading || !formReady
+    || !document.querySelector("#cidade").value
+    || !document.querySelector("#construtora").value;
+}
+
+async function loadObras() {
+  const obras = await requestJson(GLOBAL_URL);
   const tbody = document.querySelector("#table_obra tbody");
-  tbody.innerHTML = html;
-}
-
-function criarObjetoObra() {
-  return {
-    nome: document.querySelector("#nomeObra").value,
-    construtora:
-      document.querySelector("#construtora").selectedOptions[0]?.text || 0,
-    cidade: document.querySelector("#cidade").value || "",
-    endereco: document.querySelector("#endereco").value || 0,
-  };
-}
-
-async function adicionarObra() {
-  const obra = criarObjetoObra();
-
-  try {
-    await fetch(GLOBAL_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(obra),
-    });
-    limparFormulario();
-    fecharModal();
-    carregarObras();
-  } catch (error) {
-    console.error(error);
-    alert("Não foi possível cadastrar a obra.");
+  tbody.replaceChildren();
+  for (const obra of obras) {
+    const row = tbody.insertRow();
+    for (const value of [obra.id, obra.nome, obra.construtora, obra.cidade, obra.endereco]) {
+      row.insertCell().textContent = value ?? "";
+    }
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn btn-danger";
+    button.textContent = "Remover";
+    button.addEventListener("click", () => removeObra(obra.id));
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.className = "btn btn-primary me-2";
+    editButton.textContent = "Editar";
+    editButton.addEventListener("click", () => openObra(obra.id));
+    row.insertCell().append(editButton, button);
   }
 }
 
-function limparFormulario() {
-  document.querySelector("#nomeObra").value = "";
-  document.querySelector("#construtora").value = "";
-  document.querySelector("#cidade").value = "";
-  document.querySelector("#endereco").value = "";
-}
-
-function fecharModal() {
-  const modalHtml = document.querySelector("#modal_obra");
-  const modal = bootstrap.Modal.getOrCreateInstance(modalHtml);
-  modal.hide();
-}
-
-async function removerObra(id) {
-  // Regra de parada.
-  if (!confirm("Realmente deseja apagar esse registro?")) {
-    return;
-  }
-  const url = `${GLOBAL_URL}/${id}`;
-
+async function loadCities() {
+  const request = ++cityRequest;
+  const estadoId = document.querySelector("#estado").value;
+  populateSelect("#cidade", [], estadoId ? "Carregando cidades..." : "Selecione um estado primeiro");
+  showMessage("#obra-form-message");
+  updateSaveButton();
+  if (!estadoId) return;
   try {
-    await fetch(url, {
-      method: "DELETE",
-    });
+    const cidades = await requestJson(`/api/estados/${estadoId}/cidades`);
+    if (request !== cityRequest) return;
+    populateSelect("#cidade", cidades, cidades.length ? "Selecione uma cidade" : "Nenhuma cidade cadastrada neste estado");
   } catch (error) {
-    console.error(error);
-    alert("Não foi possível apagar este registro.");
+    if (request !== cityRequest) return;
+    populateSelect("#cidade", [], "Não foi possível carregar as cidades");
+    showMessage("#obra-form-message", error.message);
+  }
+  updateSaveButton();
+}
+
+async function openObra(id = null) {
+  if (saving || loading) return;
+  editingId = id;
+  loading = true;
+  formReady = false;
+  ++cityRequest;
+  document.querySelector("#obra-form").reset();
+  populateSelect("#cidade", [], "Selecione um estado primeiro");
+  document.querySelector("#modal_obra .modal-title").textContent = id ? "Editar Obra" : "Cadastrar Nova Obra";
+  document.querySelector("#save-obra").textContent = id ? "Salvar alterações" : "Cadastrar Obra";
+  showMessage("#obra-form-message");
+  updateSaveButton();
+  bootstrap.Modal.getOrCreateInstance(document.querySelector("#modal_obra")).show();
+  try {
+    const [, obra] = await Promise.all([loadCatalogs(), id ? requestJson(`${GLOBAL_URL}/${id}`) : null]);
+    if (obra) {
+      document.querySelector("#nomeObra").value = obra.nome;
+      document.querySelector("#endereco").value = obra.endereco ?? "";
+      document.querySelector("#construtora").value = obra.construtoraId;
+      document.querySelector("#estado").value = obra.estadoId;
+      await loadCities();
+      document.querySelector("#cidade").value = obra.cidadeId;
+    }
+    formReady = true;
+  } catch (error) {
+    showMessage("#obra-form-message", error.message);
   } finally {
-    carregarObras();
+    loading = false;
+    updateSaveButton();
   }
 }
 
-// Lista de construturas
-const construtoras = [
-  { id: 1, nome: "Dallo" },
-  { id: 2, nome: "Pascoalotto" },
-  { id: 3, nome: "Procave" },
-  { id: 4, nome: "FG" },
-];
+async function saveObra(event) {
+  event.preventDefault();
+  if (saving || loading || !formReady) return;
+  const form = document.querySelector("#obra-form");
+  if (!form.reportValidity()) return;
+  saving = true;
+  updateSaveButton();
+  showMessage("#obra-form-message");
+  try {
+    await requestJson(editingId ? `${GLOBAL_URL}/${editingId}` : GLOBAL_URL, {
+      method: editingId ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nome: document.querySelector("#nomeObra").value,
+        cidadeId: Number(document.querySelector("#cidade").value),
+        construtoraId: Number(document.querySelector("#construtora").value),
+        endereco: document.querySelector("#endereco").value,
+      }),
+    });
+  } catch (error) {
+    showMessage("#obra-form-message", error.message);
+    return;
+  } finally {
+    saving = false;
+    updateSaveButton();
+  }
+  form.reset();
+  ++cityRequest;
+  populateSelect("#cidade", [], "Selecione um estado primeiro");
+  updateSaveButton();
+  bootstrap.Modal.getOrCreateInstance(document.querySelector("#modal_obra")).hide();
+  showMessage("#obra-message");
+  try {
+    await loadObras();
+  } catch (error) {
+    showMessage("#obra-message", "Obra salva, mas a listagem não pôde ser atualizada. Recarregue a página.");
+  }
+}
 
-function init() {
-  popularConstrutoras(construtoras);
-  carregarObras();
+async function removeObra(id) {
+  if (!confirm("Realmente deseja apagar esse registro?")) return;
+  showMessage("#obra-message");
+  try {
+    await requestJson(`${GLOBAL_URL}/${id}`, { method: "DELETE" });
+    await loadObras();
+  } catch (error) {
+    showMessage("#obra-message", error.message);
+  }
+}
+
+async function loadCatalogs() {
+  const [estados, construtoras] = await Promise.all([
+    requestJson("/api/estados"),
+    requestJson("/api/construtoras"),
+  ]);
+  populateSelect("#estado", estados, estados.length ? "Selecione um estado" : "Nenhum estado cadastrado",
+    (estado) => `${estado.nome} (${estado.sigla})`);
+  populateSelect("#construtora", construtoras,
+    construtoras.length ? "Selecione uma construtora" : "Nenhuma construtora cadastrada");
+  updateSaveButton();
+}
+
+async function init() {
+  document.querySelector("#obra-form").addEventListener("submit", saveObra);
+  document.querySelector("#new-obra").addEventListener("click", () => openObra());
+  document.querySelector("#modal_obra").addEventListener("hide.bs.modal", (event) => {
+    if (saving || loading) event.preventDefault();
+  });
+  document.querySelector("#estado").addEventListener("change", () => loadCities());
+  document.querySelector("#cidade").addEventListener("change", updateSaveButton);
+  document.querySelector("#construtora").addEventListener("change", updateSaveButton);
+  await loadObras().catch((error) => showMessage("#obra-message", error.message));
 }
 
 init();
-
-function popularConstrutoras(construtoras) {
-  const construtoraSelect = document.querySelector("#construtora");
-  let html = "";
-  for (const construtora of construtoras) {
-    html += `<option value="${construtora.id}">${construtora.nome}</option>`;
-  }
-  construtoraSelect.innerHTML = html;
-}
-
-// //Lista de cidades
-
-// const cidade = [
-//   { id: 1, nome: "Itapema" },
-//   { id: 2, nome: "Balneário Camboriu" },
-//   { id: 3, nome: "Porto Belo" },
-//   { id: 4, nome: "Itajai" },
-// ];
-
-// function init() {
-//   popularCidade(cidade);
-//   carregarObras();
-// }
-
-// init();
-
-// function popularCidade(cidade) {
-//   const cidadeSelect = document.querySelector("#cidade");
-//   let html = "";
-//   for (const cidade of ccidade) {
-//     html += `<option value="${cidade.id}">${cidade.nome}</option>`;
-//   }
-//   cidadeSelect.innerHTML = html;
-// }

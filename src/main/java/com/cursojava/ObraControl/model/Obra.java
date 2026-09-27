@@ -9,6 +9,9 @@ public class Obra {
     private String construtora;
     private String cidade;
     private String endereco;
+    private Long cidadeId;
+    private Long estadoId;
+    private Long construtoraId;
     private List<Apartamento> apartamentos = new ArrayList<>();
 
     public Obra() {
@@ -29,6 +32,30 @@ public class Obra {
 
     public Long getId() {
         return id;
+    }
+
+    public Long getCidadeId() {
+        return cidadeId;
+    }
+
+    public void setCidadeId(Long cidadeId) {
+        this.cidadeId = cidadeId;
+    }
+
+    public Long getEstadoId() {
+        return estadoId;
+    }
+
+    public void setEstadoId(Long estadoId) {
+        this.estadoId = estadoId;
+    }
+
+    public Long getConstrutoraId() {
+        return construtoraId;
+    }
+
+    public void setConstrutoraId(Long construtoraId) {
+        this.construtoraId = construtoraId;
     }
 
     public void setId(Long id) {

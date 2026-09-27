@@ -11,11 +11,14 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.cursojava.ObraControl.dto.CadastroObra;
 import com.cursojava.ObraControl.model.Instalador;
 import com.cursojava.ObraControl.model.Obra;
 
 @SpringBootTest
+@Transactional
 class ObraRepositoryTests {
 
     @Autowired
@@ -38,13 +41,13 @@ class ObraRepositoryTests {
 
     @Test
     void deveCadastrarOBuscarEExcluirObra() {
-        Obra obra = new Obra(null, "Condomínio Jardim Europa", "Pascoalotto", "Joinville", "Avenida Brasil, 1500");
-        Obra criada = obraRepository.salvar(obra);
+        CadastroObra obra = new CadastroObra("Condomínio Jardim Europa", 1L, 1L, "Avenida Brasil, 1500");
+        Obra criada = obraRepository.save(obra);
 
         assertNotNull(criada.getId());
         assertEquals("Condomínio Jardim Europa", criada.getNome());
-        assertEquals("Pascoalotto", criada.getConstrutora());
-        assertEquals("Joinville", criada.getCidade());
+        assertEquals("Dallo", criada.getConstrutora());
+        assertEquals("Itapema", criada.getCidade());
 
         Obra encontrada = obraRepository.buscarPorId(criada.getId());
         assertNotNull(encontrada);
@@ -53,15 +56,6 @@ class ObraRepositoryTests {
         Obra removida = obraRepository.excluir(criada.getId());
         assertNotNull(removida);
         assertNull(obraRepository.buscarPorId(criada.getId()));
-    }
-
-    @Test
-    void deveCadastrarInstaladorComCidadeNova() {
-        Obra obra = new Obra(null, "Residencial Parque Sul", "Procave", "Curitiba", "Rua XV de Novembro, 800");
-        Obra criada = obraRepository.salvar(obra);
-
-        assertNotNull(criada.getId());
-        assertEquals("Curitiba", obraRepository.buscarPorId(criada.getId()).getCidade());
     }
 
     @Test

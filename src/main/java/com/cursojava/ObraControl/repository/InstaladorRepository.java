@@ -56,4 +56,10 @@ public class InstaladorRepository {
         jdbcTemplate.update("DELETE FROM instalador WHERE id = ?", id);
         return instalador;
     }
+
+    public Instalador update(Long id, Instalador instalador) {
+        jdbcTemplate.update("UPDATE instalador SET nome = ?, telefone = ? WHERE id = ?",
+                instalador.getNome(), instalador.getTelefone(), id);
+        return buscarPorId(id);
+    }
 }

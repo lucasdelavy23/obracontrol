@@ -16,12 +16,13 @@
         <h1>Cadastro de Obra</h1>
         <button
           class="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#modal_obra"
+          id="new-obra"
         >
           Nova Obra
         </button>
       </div>
+
+      <div id="obra-message" class="alert alert-danger mt-3" role="alert" hidden></div>
 
       <table class="table" id="table_obra">
         <thead>
@@ -40,23 +41,27 @@
       <!-- Modal -->
       <div class="modal" tabindex="-1" id="modal_obra">
         <div class="modal-dialog">
-          <div class="modal-content">
+          <form class="modal-content" id="obra-form">
             <div class="modal-header">
               <h5 class="modal-title">Cadastrar Nova Obra</h5>
               <button
                 type="button"
                 class="btn-close"
                 data-bs-dismiss="modal"
-                aria-label="Close"
+                aria-label="Fechar"
               ></button>
             </div>
             <div class="modal-body">
+              <div id="obra-form-message" class="alert alert-danger" role="alert" hidden></div>
+              <fieldset id="obra-fields">
               <div class="mb-3">
-                <label for="nome" class="form-label">Nome da Obra:</label>
+                <label for="nomeObra" class="form-label">Nome da Obra:</label>
                 <input
                   type="text"
                   name="nome"
                   id="nomeObra"
+                  required
+                  maxlength="200"
                   class="form-control"
                 />
               </div>
@@ -66,16 +71,23 @@
                   name="construtora"
                   id="construtora"
                   class="form-select"
+                  required
+                  disabled
                 ></select>
               </div>
               <div class="mb-3">
+                <label for="estado" class="form-label">Estado:</label>
+                <select id="estado" name="estado" class="form-select" required disabled></select>
+              </div>
+              <div class="mb-3">
                 <label for="cidade" class="form-label">Cidade:</label>
-                <input
-                  type="text"
+                <select
                   name="cidade"
                   id="cidade"
-                  class="form-control"
-                />
+                  class="form-select"
+                  required
+                  disabled
+                ><option value="">Selecione um estado primeiro</option></select>
               </div>
               <div class="mb-3">
                 <label for="endereco" class="form-label">Endereço:</label>
@@ -83,9 +95,11 @@
                   type="text"
                   name="endereco"
                   id="endereco"
+                  maxlength="300"
                   class="form-control"
                 />
               </div>
+              </fieldset>
             </div>
             <div class="modal-footer">
               <button
@@ -93,17 +107,18 @@
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                Close
+                Fechar
               </button>
               <button
-                type="button"
+                type="submit"
+                id="save-obra"
                 class="btn btn-primary"
-                onclick="adicionarObra()"
+                disabled
               >
                 Cadastrar Obra
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
       <script th:src="@{/obra.js}"></script>

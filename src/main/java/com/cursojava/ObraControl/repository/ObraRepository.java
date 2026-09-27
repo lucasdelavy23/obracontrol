@@ -2,6 +2,8 @@ package com.cursojava.ObraControl.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.cursojava.ObraControl.model.Obra;
+import com.cursojava.ObraControl.dto.CadastroObra;
 
 @Repository
 public class ObraRepository {
@@ -21,7 +24,7 @@ public class ObraRepository {
     }
 
     private static final String SELECT_BASE = """
-            SELECT obra.id, obra.nome, obra.endereco,
+            SELECT obra.id, obra.nome, obra.endereco, obra.cidade_id, obra.construtora_id, cidade.estado_id,
                    construtora.nome AS construtora,
                    cidade.nome AS cidade
             FROM obra
@@ -31,56 +34,45 @@ public class ObraRepository {
 
     public List<Obra> listarTodas() {
         return jdbcTemplate.query(SELECT_BASE + " ORDER BY obra.id",
-                (rs, rowNum) -> new Obra(rs.getLong("id"), rs.getString("nome"),
-                        rs.getString("construtora"), rs.getString("cidade"), rs.getString("endereco")));
+                this::mapObra);
     }
 
     public Obra buscarPorId(Long id) {
         List<Obra> obras = jdbcTemplate.query(SELECT_BASE + " WHERE obra.id = ?",
-                (rs, rowNum) -> new Obra(rs.getLong("id"), rs.getString("nome"),
-                        rs.getString("construtora"), rs.getString("cidade"), rs.getString("endereco")),
+                this::mapObra,
                 id);
         return obras.isEmpty() ? null : obras.get(0);
     }
 
-    public Obra salvar(Obra obra) {
-        Long construtoraId = resolverConstrutora(obra.getConstrutora());
-        Long cidadeId = resolverCidade(obra.getCidade());
-
+    public Obra save(CadastroObra obra) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     "INSERT INTO obra (nome, cidade_id, construtora_id, endereco) VALUES (?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, obra.getNome());
-            ps.setLong(2, cidadeId);
-            ps.setLong(3, construtoraId);
-            ps.setString(4, obra.getEndereco());
+            ps.setString(1, obra.nome());
+            ps.setLong(2, obra.cidadeId());
+            ps.setLong(3, obra.construtoraId());
+            ps.setString(4, obra.endereco());
             return ps;
         }, keyHolder);
 
-        obra.setId(keyHolder.getKey().longValue());
+        return buscarPorId(keyHolder.getKey().longValue());
+    }
+
+    private Obra mapObra(ResultSet rs, int rowNum) throws SQLException {
+        Obra obra = new Obra(rs.getLong("id"), rs.getString("nome"), rs.getString("construtora"),
+                rs.getString("cidade"), rs.getString("endereco"));
+        obra.setCidadeId(rs.getLong("cidade_id"));
+        obra.setEstadoId(rs.getLong("estado_id"));
+        obra.setConstrutoraId(rs.getLong("construtora_id"));
         return obra;
     }
 
-    private Long resolverConstrutora(String nome) {
-        List<Long> ids = jdbcTemplate.queryForList(
-                "SELECT id FROM construtora WHERE nome = ? LIMIT 1", Long.class, nome);
-        if (!ids.isEmpty()) {
-            return ids.get(0);
-        }
-        jdbcTemplate.update("INSERT INTO construtora (nome) VALUES (?)", nome);
-        return jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
-    }
-
-    private Long resolverCidade(String nome) {
-        List<Long> ids = jdbcTemplate.queryForList(
-                "SELECT id FROM cidade WHERE nome = ? LIMIT 1", Long.class, nome);
-        if (!ids.isEmpty()) {
-            return ids.get(0);
-        }
-        jdbcTemplate.update("INSERT INTO cidade (nome, estado_id) VALUES (?, 1)", nome);
-        return jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
+    public Obra update(Long id, CadastroObra obra) {
+        jdbcTemplate.update("UPDATE obra SET nome = ?, cidade_id = ?, construtora_id = ?, endereco = ? WHERE id = ?",
+                obra.nome(), obra.cidadeId(), obra.construtoraId(), obra.endereco(), id);
+        return buscarPorId(id);
     }
 
     public Obra excluir(Long id) {

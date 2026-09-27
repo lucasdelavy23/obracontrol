@@ -16,13 +16,13 @@
         <h1>Cadastro de Instalador</h1>
         <button
           class="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#modal_instalador"
+          id="new-instalador"
         >
           Novo instalador
         </button>
       </div>
 
+      <div id="instalador-message" class="alert alert-danger mt-3" role="alert" hidden></div>
       <table class="table" id="table_instaladores">
         <thead>
           <tr>
@@ -38,32 +38,34 @@
       <!-- Modal -->
       <div class="modal" tabindex="-1" id="modal_instalador">
         <div class="modal-dialog">
-          <div class="modal-content">
+          <form class="modal-content" id="instalador-form">
             <div class="modal-header">
               <h5 class="modal-title">Cadastrar Novo Instalador</h5>
               <button
                 type="button"
                 class="btn-close"
                 data-bs-dismiss="modal"
-                aria-label="Close"
+                aria-label="Fechar"
               ></button>
             </div>
             <div class="modal-body">
+              <div id="instalador-form-message" class="alert alert-danger" role="alert" hidden></div>
+              <fieldset id="instalador-fields">
               <div class="mb-3">
                 <label for="nome" class="form-label">Nome:</label>
-                <input type="text" name="nome" id="nome" class="form-control" />
+                <input type="text" name="nome" id="nome" class="form-control" required maxlength="200" />
               </div>
               <div class="mb-3">
                 <label for="telefone" class="form-label">Telefone:</label>
                 <input
-                  type="text"
+                  type="tel"
                   name="telefone"
                   id="telefone"
                   class="form-control"
-                  inputmode="numeric"
-                  maxlength="14"
+                  maxlength="30"
                 />
               </div>
+              </fieldset>
             </div>
             <div class="modal-footer">
               <button
@@ -71,17 +73,17 @@
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                Close
+                Fechar
               </button>
               <button
-                type="button"
+                type="submit"
                 class="btn btn-primary"
-                onclick="adicionarInstalador()"
+                id="save-instalador"
               >
                 Cadastrar Instalador
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
       <script th:src="@{/instalador.js}"></script>
