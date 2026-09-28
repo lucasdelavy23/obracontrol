@@ -45,6 +45,13 @@ async function loadObras() {
     for (const value of [obra.id, obra.nome, obra.construtora, obra.cidade, obra.endereco]) {
       row.insertCell().textContent = value ?? "";
     }
+    const statusCell = row.insertCell();
+    const statusBadge = document.createElement("span");
+    const finalizada = obra.status === "finalizada";
+    statusBadge.className = `badge ${finalizada ? "text-bg-success" : "text-bg-primary"}`;
+    statusBadge.textContent = finalizada ? "Finalizada" : "Aberta";
+    statusCell.append(statusBadge);
+
     const button = document.createElement("button");
     button.type = "button";
     button.className = "btn btn-danger";
@@ -55,7 +62,34 @@ async function loadObras() {
     editButton.className = "btn btn-primary me-2";
     editButton.textContent = "Editar";
     editButton.addEventListener("click", () => openObra(obra.id));
-    row.insertCell().append(editButton, button);
+    const statusButton = document.createElement("button");
+    statusButton.type = "button";
+    statusButton.className = `${finalizada ? "btn btn-outline-primary" : "btn btn-outline-success"} me-2`;
+    statusButton.textContent = finalizada ? "Reabrir" : "Finalizar";
+    statusButton.addEventListener("click", () => updateObraStatus(obra, statusButton));
+    const optionsCell = row.insertCell();
+    optionsCell.className = "text-nowrap";
+    optionsCell.append(editButton, statusButton, button);
+  }
+}
+
+async function updateObraStatus(obra, button) {
+  const finalizada = obra.status === "finalizada";
+  const novoStatus = finalizada ? "aberta" : "finalizada";
+  const acao = finalizada ? "reabrir" : "finalizar";
+  if (!confirm(`Realmente deseja ${acao} a obra ${obra.nome}?`)) return;
+  button.disabled = true;
+  showMessage("#obra-message");
+  try {
+    await requestJson(`${GLOBAL_URL}/${obra.id}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: novoStatus }),
+    });
+    await loadObras();
+  } catch (error) {
+    button.disabled = false;
+    showMessage("#obra-message", error.message);
   }
 }
 

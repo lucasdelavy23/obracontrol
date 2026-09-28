@@ -1,8 +1,5 @@
 package com.cursojava.ObraControl.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Obra {
     private Long id;
     private String nome;
@@ -12,7 +9,7 @@ public class Obra {
     private Long cidadeId;
     private Long estadoId;
     private Long construtoraId;
-    private List<Apartamento> apartamentos = new ArrayList<>();
+    private StatusObra status;
 
     public Obra() {
     }
@@ -94,11 +91,11 @@ public class Obra {
         this.endereco = endereco;
     }
 
-    public List<Apartamento> getApartamentos() {
-        return apartamentos;
+    public StatusObra getStatus() {
+        return status;
     }
 
-    public void setApartamentos(List<Apartamento> apartamentos) {
-        this.apartamentos = apartamentos;
+    public void setStatus(StatusObra status) {
+        this.status = status;
     }
 }

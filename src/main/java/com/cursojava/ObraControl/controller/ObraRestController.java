@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cursojava.ObraControl.model.Obra;
+import com.cursojava.ObraControl.dto.AtualizacaoStatusObra;
 import com.cursojava.ObraControl.dto.CadastroObra;
 import com.cursojava.ObraControl.service.ObraService;
 
@@ -48,5 +49,10 @@ public class ObraRestController {
     @PutMapping("/{id}")
     public Obra update(@PathVariable Long id, @RequestBody CadastroObra obra) {
         return obraService.update(id, obra);
+    }
+
+    @PutMapping("/{id}/status")
+    public Obra updateStatus(@PathVariable Long id, @RequestBody AtualizacaoStatusObra atualizacao) {
+        return obraService.updateStatus(id, atualizacao);
     }
 }

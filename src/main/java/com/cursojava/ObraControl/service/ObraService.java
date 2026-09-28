@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cursojava.ObraControl.dto.CadastroObra;
+import com.cursojava.ObraControl.dto.AtualizacaoStatusObra;
 import com.cursojava.ObraControl.model.Obra;
+import com.cursojava.ObraControl.model.StatusObra;
 import com.cursojava.ObraControl.repository.CadastroRepository;
 import com.cursojava.ObraControl.repository.ObraRepository;
 
@@ -47,6 +49,16 @@ public class ObraService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Obra não encontrada.");
         }
         return updated;
+    }
+
+    @Transactional
+    public Obra updateStatus(Long id, AtualizacaoStatusObra atualizacao) {
+        buscarPorId(id);
+        StatusObra status = StatusObra.fromNome(atualizacao == null ? null : atualizacao.status());
+        if (status == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status da obra inválido.");
+        }
+        return obraRepository.updateStatus(id, status);
     }
 
     private CadastroObra validate(CadastroObra obra) {

@@ -80,7 +80,9 @@ class CadastroObraTests {
                 .andExpect(jsonPath("$.nome").value("Obra por IDs"))
                 .andExpect(jsonPath("$.cidade").value("Cidade homônima"))
                 .andExpect(jsonPath("$.construtora").value("Construtora do banco"))
-                .andExpect(jsonPath("$.endereco").value("Rua A"));
+                .andExpect(jsonPath("$.endereco").value("Rua A"))
+                .andExpect(jsonPath("$.status").value("aberta"))
+                .andExpect(jsonPath("$.apartamentos").doesNotExist());
 
         Long id = jdbcTemplate.queryForObject("SELECT id FROM obra WHERE nome = 'Obra por IDs'", Long.class);
         assertEquals(901L, jdbcTemplate.queryForObject("SELECT cidade_id FROM obra WHERE id = ?", Long.class, id));

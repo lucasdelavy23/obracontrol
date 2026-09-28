@@ -1,15 +1,11 @@
 package com.cursojava.ObraControl.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Apartamento {
     private Long id;
     private String numero;
     private Long obraId;
     private String obra;
     private int quantidadePortas;
-    private List<Porta> portas = new ArrayList<>();
 
     public Apartamento() {
     }
@@ -59,11 +55,4 @@ public class Apartamento {
         this.quantidadePortas = quantidadePortas;
     }
 
-    public List<Porta> getPortas() {
-        return portas;
-    }
-
-    public void setPortas(List<Porta> portas) {
-        this.portas = portas;
-    }
 }

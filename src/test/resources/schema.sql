@@ -2,7 +2,8 @@ CREATE TABLE estado (
     id BIGINT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     sigla CHAR(2) NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT uk_estado_sigla UNIQUE (sigla)
 );
 
 CREATE TABLE cidade (
@@ -10,7 +11,8 @@ CREATE TABLE cidade (
     nome VARCHAR(150) NOT NULL,
     estado_id BIGINT NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_cidade_estado FOREIGN KEY (estado_id) REFERENCES estado (id)
+    CONSTRAINT fk_cidade_estado FOREIGN KEY (estado_id) REFERENCES estado (id),
+    CONSTRAINT uk_cidade_nome_estado UNIQUE (nome, estado_id)
 );
 
 CREATE TABLE construtora (
@@ -35,7 +37,8 @@ CREATE TABLE obra (
     status VARCHAR(20) NOT NULL DEFAULT 'aberta',
     PRIMARY KEY (id),
     CONSTRAINT fk_obra_cidade FOREIGN KEY (cidade_id) REFERENCES cidade (id),
-    CONSTRAINT fk_obra_construtora FOREIGN KEY (construtora_id) REFERENCES construtora (id)
+    CONSTRAINT fk_obra_construtora FOREIGN KEY (construtora_id) REFERENCES construtora (id),
+    CONSTRAINT ck_obra_status CHECK (status IN ('aberta', 'finalizada'))
 );
 
 CREATE TABLE apartamento (

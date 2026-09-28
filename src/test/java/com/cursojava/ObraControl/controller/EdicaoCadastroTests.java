@@ -44,7 +44,8 @@ class EdicaoCadastroTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cidadeId").value(1))
                 .andExpect(jsonPath("$.estadoId").value(1))
-                .andExpect(jsonPath("$.construtoraId").value(1));
+                .andExpect(jsonPath("$.construtoraId").value(1))
+                .andExpect(jsonPath("$.status").value("finalizada"));
         String body = """
                 {"nome":"  Obra editada  ","cidadeId":950,"construtoraId":950,"endereco":"  Rua nova  "}
                 """;
@@ -56,13 +57,50 @@ class EdicaoCadastroTests {
                     .andExpect(jsonPath("$.cidadeId").value(950))
                     .andExpect(jsonPath("$.estadoId").value(950))
                     .andExpect(jsonPath("$.construtoraId").value(950))
-                    .andExpect(jsonPath("$.construtora").value("Outra construtora"));
+                    .andExpect(jsonPath("$.construtora").value("Outra construtora"))
+                    .andExpect(jsonPath("$.status").value("finalizada"));
         }
         mvc.perform(get("/api/obras/1"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.endereco").value("Rua nova"));
         assertEquals(count, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obra", Long.class));
         assertEquals("finalizada", jdbcTemplate.queryForObject("SELECT status FROM obra WHERE id = 1", String.class));
         assertEquals("Outra obra", jdbcTemplate.queryForObject("SELECT nome FROM obra WHERE id = 950", String.class));
+    }
+
+    @Test
+    void shouldFinalizeAndReopenObraWithoutChangingOtherFields() throws Exception {
+        var before = jdbcTemplate.queryForMap(
+                "SELECT nome, cidade_id, construtora_id, endereco FROM obra WHERE id = 1");
+
+        mvc.perform(put("/api/obras/1/status").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"status\":\"finalizada\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.status").value("finalizada"));
+        assertEquals("finalizada", jdbcTemplate.queryForObject(
+                "SELECT status FROM obra WHERE id = 1", String.class));
+        assertEquals(before, jdbcTemplate.queryForMap(
+                "SELECT nome, cidade_id, construtora_id, endereco FROM obra WHERE id = 1"));
+
+        mvc.perform(put("/api/obras/1/status").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"status\":\"ABERTA\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("aberta"));
+    }
+
+    @Test
+    void shouldRejectInvalidStatusAndMissingObra() throws Exception {
+        for (String body : new String[] {"{}", "null", "{\"status\":\"em andamento\"}"}) {
+            mvc.perform(put("/api/obras/1/status").contentType(MediaType.APPLICATION_JSON).content(body))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.mensagem").exists());
+        }
+        assertEquals("aberta", jdbcTemplate.queryForObject("SELECT status FROM obra WHERE id = 1", String.class));
+
+        mvc.perform(put("/api/obras/99999/status").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"status\":\"finalizada\"}"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.mensagem").value("Obra não encontrada."));
     }
 
     @Test

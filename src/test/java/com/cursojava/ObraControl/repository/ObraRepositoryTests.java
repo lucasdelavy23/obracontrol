@@ -5,12 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cursojava.ObraControl.dto.CadastroObra;
@@ -26,6 +29,9 @@ class ObraRepositoryTests {
 
     @Autowired
     private InstaladorRepository instaladorRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     void deveListarObrasComNomesResolvidos() {
@@ -78,5 +84,23 @@ class ObraRepositoryTests {
     void deveBuscarInstaladoresExistentes() {
         List<Instalador> instaladores = instaladorRepository.listarTodas();
         assertTrue(instaladores.stream().anyMatch(i -> "Carlos Eduardo Silva".equals(i.getNome())));
+    }
+
+    @Test
+    void deveImpedirSiglaDeEstadoDuplicada() {
+        assertThrows(DataIntegrityViolationException.class, () -> jdbcTemplate.update(
+                "INSERT INTO estado (nome, sigla) VALUES ('Outro estado', 'SC')"));
+    }
+
+    @Test
+    void deveImpedirCidadeDuplicadaNoMesmoEstado() {
+        assertThrows(DataIntegrityViolationException.class, () -> jdbcTemplate.update(
+                "INSERT INTO cidade (nome, estado_id) VALUES ('Itapema', 1)"));
+    }
+
+    @Test
+    void deveImpedirStatusDeObraInvalido() {
+        assertThrows(DataIntegrityViolationException.class, () -> jdbcTemplate.update(
+                "INSERT INTO obra (nome, cidade_id, construtora_id, status) VALUES ('Inválida', 1, 1, 'pausada')"));
     }
 }

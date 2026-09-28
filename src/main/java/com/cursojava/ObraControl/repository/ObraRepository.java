@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.cursojava.ObraControl.model.Obra;
+import com.cursojava.ObraControl.model.StatusObra;
 import com.cursojava.ObraControl.dto.CadastroObra;
 
 @Repository
@@ -24,7 +25,8 @@ public class ObraRepository {
     }
 
     private static final String SELECT_BASE = """
-            SELECT obra.id, obra.nome, obra.endereco, obra.cidade_id, obra.construtora_id, cidade.estado_id,
+            SELECT obra.id, obra.nome, obra.endereco, obra.status,
+                   obra.cidade_id, obra.construtora_id, cidade.estado_id,
                    construtora.nome AS construtora,
                    cidade.nome AS cidade
             FROM obra
@@ -66,12 +68,18 @@ public class ObraRepository {
         obra.setCidadeId(rs.getLong("cidade_id"));
         obra.setEstadoId(rs.getLong("estado_id"));
         obra.setConstrutoraId(rs.getLong("construtora_id"));
+        obra.setStatus(StatusObra.fromNome(rs.getString("status")));
         return obra;
     }
 
     public Obra update(Long id, CadastroObra obra) {
         jdbcTemplate.update("UPDATE obra SET nome = ?, cidade_id = ?, construtora_id = ?, endereco = ? WHERE id = ?",
                 obra.nome(), obra.cidadeId(), obra.construtoraId(), obra.endereco(), id);
+        return buscarPorId(id);
+    }
+
+    public Obra updateStatus(Long id, StatusObra status) {
+        jdbcTemplate.update("UPDATE obra SET status = ? WHERE id = ?", status.getNome(), id);
         return buscarPorId(id);
     }
 

@@ -43,7 +43,8 @@ class ApartamentoTests {
                     .andExpect(jsonPath("$.numero").value(numero))
                     .andExpect(jsonPath("$.obraId").value(1))
                     .andExpect(jsonPath("$.obra").value("Residencial Atlântico"))
-                    .andExpect(jsonPath("$.quantidadePortas").value(0));
+                    .andExpect(jsonPath("$.quantidadePortas").value(0))
+                    .andExpect(jsonPath("$.portas").doesNotExist());
         }
         mvc.perform(get("/api/apartamentos").param("obraId", "1"))
                 .andExpect(status().isOk())
